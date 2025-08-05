@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Text;
-using System.Threading.Tasks;
 using WorkCalendar.Library.Models;
 
 namespace WorkCalendar.Library.Planner

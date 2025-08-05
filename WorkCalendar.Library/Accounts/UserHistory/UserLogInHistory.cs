@@ -1,6 +1,5 @@
 ﻿namespace WorkCalendar.Library.Accounts.UserHistory
 { 
-
 	public class UserLogInHistory
     {
         public int UserId { get; set; }

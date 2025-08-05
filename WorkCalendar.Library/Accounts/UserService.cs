@@ -33,7 +33,6 @@ namespace WorkCalendar.Library.Accounts
                 return new UserToken();
             }
             
-
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JWT:SecretKey"]);
 
@@ -57,7 +56,7 @@ namespace WorkCalendar.Library.Accounts
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            Console.WriteLine("token is" + token);
+            Console.WriteLine("user token" + token);
 
             user.Token = tokenHandler.WriteToken(token);
 

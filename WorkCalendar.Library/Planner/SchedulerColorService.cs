@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using WorkCalendar.Library.Models;
 
 namespace WorkCalendar.Library.Planner
@@ -49,15 +43,12 @@ namespace WorkCalendar.Library.Planner
 				{
 					day.DayType = "Unavailabe";
 				}
-
 			}
 
 			return coloredList;
 		}
 
 		public List<DateTime> Range(DateTime startDate, DateTime endDate)
-		{
-			return Enumerable.Range(0, (endDate - startDate).Days + 1).Select(d => startDate.AddDays(d)).ToList();
-		}
-	}
+			=>Enumerable.Range(0, (endDate - startDate).Days + 1).Select(d => startDate.AddDays(d)).ToList();
+	}	
 }

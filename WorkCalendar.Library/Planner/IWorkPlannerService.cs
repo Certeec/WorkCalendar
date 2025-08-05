@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WorkCalendar.Library.Models;
+﻿using WorkCalendar.Library.Models;
 
 namespace WorkCalendar.Library.Planner
 {
@@ -15,6 +10,5 @@ namespace WorkCalendar.Library.Planner
         public List<SchedulerTask> GetUserTasksByDate(int userId, DateTime from, DateTime to);
         public SchedulerTask GetUserTaskById(int userId, int taskId);
         bool DeleteTask(int userId, int taskId);
-
 	}
 }
