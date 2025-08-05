@@ -19,4 +19,8 @@
     <ProjectReference Include="..\WorkCalendar.Library\WorkCalendar.Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ControllersDTO\" />
+  </ItemGroup>
+
 </Project>

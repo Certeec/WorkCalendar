@@ -2,9 +2,6 @@ using Microsoft.IdentityModel.Tokens;
 using WorkCalendar.Library.Accounts;
 using WorkCalendar.Library.Accounts.Safety;
 using WorkCalendar.Library.Accounts.UserHistory;
-using WorkCalendar.Library.Admin;
-using WorkCalendar.Library.Clients.PatientsServices;
-using WorkCalendar.Library.GameItems.GameItem;
 using WorkCalendar.Library.Planner;
 using WorkCalendar.Library.Planner.ConfigurableDefaultvalues;
 using WorkCalendar.Library.Planner.Places;
@@ -21,8 +18,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IAccountsRepository, AccountsRepository>();
 builder.Services.AddTransient<IUserService, UserService>();
 builder.Services.AddTransient<IHasher, Sha256Hasher>();
-builder.Services.AddTransient<IPatientsRepository, PatientsRepository>();
-builder.Services.AddTransient<IModeratorService, ModeratorService>();
 builder.Services.AddTransient<IUserLogsRepository, UserLogsRepository>();
 builder.Services.AddTransient<IWorkPlannerService, WorkPlannerService>();
 builder.Services.AddTransient<IWorkPlannerRepository, WorkPlannerRepository>();
@@ -32,8 +27,6 @@ builder.Services.AddTransient<IUserDefaultIncomeRepository, UserDefaultIncomeRep
 builder.Services.AddTransient<ISchedulerColorService, SchedulerColorService>();
 builder.Services.AddTransient<ISchedulerGeneratorService, SchedulerGeneratorService>();
 builder.Services.AddTransient<ISchedulerGeneratorRepository, SchedulerGeneratorRepository>();
-builder.Services.AddTransient<IGameItemService, GameItemService>();
-builder.Services.AddTransient<IGameItemRepository, GameItemRepository>();
 
 builder.Services.AddAuthentication(opt =>
 {
@@ -69,7 +62,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-
 
 
 var app = builder.Build();
