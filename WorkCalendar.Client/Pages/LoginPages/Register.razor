@@ -1,0 +1,113 @@
+﻿@page "/Register"
+@using WorkCalendar.Client.Data.LoginClasses
+@using WorkCalendar.Client.Data.MessageBox
+@inject NavigationManager navigationManager
+@inject IUserActions _userActions
+@inject IMessageBoxHandler messageHandler
+@attribute [AllowAnonymous]
+
+
+<EditForm Model="@model" OnValidSubmit="RegisterAccount" >
+    <DataAnnotationsValidator />
+    <MudGrid  Class="d-flex justify-center">
+        <MudItem xs="12" sm="4">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="First name" HelperText="Max. 8 characters"
+                                  @bind-Value="model.Username" For="@(() => model.Username)" />
+                    <MudTextField Label="Email" Class="mt-3"
+                                  @bind-Value="model.Email" For="@(() => model.Email)" />
+                    <MudTextField Label="Password" Required="true" OnlyValidateIfDirty="true" Validation="@(() => SuperTest())" HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="model.Password" For="@(() => model.Password)" @onchange="SuperTest" InputType="InputType.Password" />
+                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
+                                  @bind-Value="model.Password2" For="@(() => model.Password2)" InputType="InputType.Password" />
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="2">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                <MudText Typo="Typo.body2" Color="PasswordLengthIsValid()"> Hasło zawiera przynajmniej 8 znaków </MudText>
+                <MudText Typo="Typo.body2" Color="Color.Error"> Hasło posiada znak specjalny </MudText>
+                <MudText Typo="Typo.body2" Color="PasswordRepeatTrue()"> Hasła powinny być takie same</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+@if (messageHandler.IsVisible() == true)
+{
+    <MudAlert Severity="Severity.Info" d-flex="align-bottom" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => messageHandler.SetInvisible())"> @messageHandler.GetMessage()  </MudAlert>
+}
+
+@code{
+    private RegisterAccountForm model = new RegisterAccountForm();
+    private Color _passwordLengthColor = Color.Error;
+
+    private Color PasswordLengthIsValid()
+    {
+        if(model.Password == null)
+        {
+            return Color.Error;
+        }
+
+        if(model.Password.Length > 8)
+        {
+            return Color.Success;
+
+        }
+
+        return Color.Error;
+    }
+
+    private void SuperTest()
+    {
+        Console.WriteLine(model.Password);
+    }
+
+    private Color PasswordRepeatTrue()
+    {
+        if (model.Password == null || model.Password2 == null)
+        {
+            return Color.Error;
+        }
+
+        if(model.Password == model.Password2)
+        {
+            return Color.Success;
+        }
+
+        return Color.Error;
+    }
+
+
+    private async Task RegisterAccount()
+    {
+
+        UserCredentials userCredentials = new UserCredentials() { Login = model.Username,
+                Password = model.Password,
+                Email = model.Email };
+
+        if(true != userCredentials.VerifyData())
+        {
+            messageHandler.SetMessage("Please fill all the forms");
+            return;
+        }
+
+        var result = await _userActions.CreateAccount(userCredentials);
+
+
+        if(true == result)
+        {
+            messageHandler.SetMessage("Account created Succesfully");
+            navigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            messageHandler.SetMessage("Wrong Data");
+        }
+
+    }
+}

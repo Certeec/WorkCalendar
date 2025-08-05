@@ -1,0 +1,320 @@
+﻿@page "/WorkScheduler/SchedulerAnalyzer"
+@using System.Globalization
+@using System.Net.Http.Json
+@using MudBlazor
+@using WorkCalendar.Client.Data.MessageBox
+@using WorkCalendar.Client.Data.Scheduler
+@using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
+@using WorkCalendar.Client.Data.Scheduler.SchedulerUserDefaults
+@using WorkCalendar.Client.Shared.Dialogs
+@inject IUserActions userActions
+@inject IMessageBoxHandler messageHandler
+@inject IUserLogsActions userLogsActions
+@inject ISchedulerService schedulerService
+@inject ISchedulerPlacesService _schedulerPlacesService;
+@inject ISnackbar snackbar;
+@inject IDialogService dialogService
+
+@inject ISchedulerDefaultHourIncomeService defaultIncomeService;
+@inject HttpClient httpClient
+<MudGrid>
+<MudItem xs="12" lg="4" Elevation="0">
+<MudDateRangePicker Label="Choose the dates" @bind-DateRange="dateRange" />
+	<MudPaper Class="pa-4">
+		<MudChart ChartType="ChartType.Pie" InputData="@PreparePieData()" @bind-SelectedIndex="Index" InputLabels="@PreparePie()" Width="300px" Height="300px" />
+	</MudPaper>
+</MudItem>
+	<MudItem xs="12" lg="3" Elevation="2" Style="margin-top:60px; height:max-content;">
+		<MudPaper Class="d-flex align-left  mud-width-full py-10">
+			<MudStack Spacing="4">
+				<MudButton @onclick="ShowSummary" Variant="Variant.Filled" Color="Color.Primary">
+					Show Summary
+				</MudButton>
+			<MudButton @onclick="ShowPlaces" Variant="Variant.Filled" Color="Color.Primary">
+				Show places
+			</MudButton>
+					<MudStack Row>
+				<MudTextField @bind-Value="userIncome" Label="Default income per hour" Variant="Variant.Outlined"></MudTextField>
+
+					<MudButton @onclick="SetDefaultIncome" Variant="Variant.Filled" Color="Color.Primary" >
+						Set
+					</MudButton>
+				</MudStack>
+				</MudStack>
+		</MudPaper>
+	</MudItem>
+</MudGrid>
+<br />
+<MudGrid>
+	<MudItem xs="6" lg="2" Elevation="0">
+			<MudSelect T="string" Label="Place" Variant="Variant.Outlined" Style="width: 50px;" AnchorOrigin="Origin.BottomCenter" @bind-Value="placeFilter">
+				<MudSelectItem Value="@("All")" />
+				@foreach (var place in places)
+				{
+					<MudSelectItem Value="(place.Name)" />
+				}
+			</MudSelect>
+	</MudItem>
+
+		<MudItem xs="6" lg="2" Elevation="0">
+			<MudSelect T="string" Label="Type" Variant="Variant.Outlined" Style="width: 50px;" AnchorOrigin="Origin.BottomCenter" @bind-Value="typeFilter">
+				<MudSelectItem Value="@("All")" />
+				<MudSelectItem Value="@("Planned")" />
+				<MudSelectItem Value="@("Done")" />
+				<MudSelectItem Value="@("Availabe")" />
+				<MudSelectItem Value="@("Unavailabe")" />
+			</MudSelect>
+		</MudItem>
+	<MudItem xs="6" lg="2" Elevation="0">
+			<MudNumericField @bind-Value="minLength" Label="Minimum length" Variant="Variant.Outlined" Min="0" Max="10" />
+		</MudItem>
+	<MudItem xs="6" lg="2" Elevation="0">
+			<MudNumericField @bind-Value="maxLength" Label="Maximum length" Variant="Variant.Outlined" Min="0" Max="10" />
+		</MudItem>
+	<MudItem xs="6" lg="2" Elevation="0">
+			<MudNumericField @bind-Value="minBonus" Label="Minimum bonus" Variant="Variant.Outlined" Min="0" Max="10" />
+		</MudItem>
+	<MudItem xs="6" lg="2" Elevation="0">
+			<MudNumericField @bind-Value="maxBonus" Label="Maximum bonus" Variant="Variant.Outlined" Min="0" Max="10" />
+		</MudItem>
+</MudGrid>
+
+<MudButton @onclick="AddNewTask" Variant="Variant.Filled" Color="Color.Primary">
+	Add
+</MudButton>
+
+<MudGrid Spacing="0">
+	<MudItem xs="6" lg="2" Elevation="0">
+	<MudTextField @bind-Value="SumData().TotalHours" Label="Total planned hours" ReadOnly="true" Variant="Variant.Filled" />
+	</MudItem>
+	<MudItem xs="6" lg="2" Elevation="0">
+	<MudTextField @bind-Value="SumData().ExpectedMoney" Label="Possible pay" ReadOnly="true" Variant="Variant.Filled" />
+	</MudItem>
+		<MudItem xs="6" lg="2" Elevation="0">
+	<MudTextField @bind-Value="SumData().Hours" Label="Hours worked" ReadOnly="true" Variant="Variant.Filled" />
+	</MudItem>
+	<MudItem xs="6" lg="2" Elevation="0">
+	<MudTextField @bind-Value="SumData().MoneyEarned" Label="Regular pay" ReadOnly="true" Variant="Variant.Filled" />
+	</MudItem>
+				<MudItem xs="6" lg="2" Elevation="0">
+	<MudTextField @bind-Value="SumData().bonus" Label="Bonus earned" ReadOnly="true" Variant="Variant.Filled" />
+	</MudItem>
+				<MudItem xs="6" lg="2" Elevation="0">
+	<MudTextField @bind-Value="SumData().TotalPay" Label="Total pay" ReadOnly="true" Variant="Variant.Filled" />
+	</MudItem>
+</MudGrid>
+
+<MudDataGrid T="SchedulerTask" Items="@FilteredList()" SortMode="SortMode.Multiple" Striped="true">
+	<Columns>
+		<HierarchyColumn T="SchedulerTask" />
+		<PropertyColumn Property="x => x.DateStart" Title="DateStart" Sortable="false" />
+		<PropertyColumn Property="x => x.DateEnd" />
+		<PropertyColumn Property="x => x.TimeLength" />
+		<PropertyColumn Property="x => x.TaskType" />
+		<TemplateColumn Title="From/To" SortBy="@(x => $"{x.DateStart} - {x.DateEnd}")">
+			<CellTemplate>
+				@context.Item.DateStart - @context.Item.DateEnd
+			</CellTemplate>
+		</TemplateColumn>
+		<TemplateColumn Hidden="false" CellClass="d-flex justify-end">
+			<CellTemplate>
+				<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" OnClick="@(() => EditTask(context.Item.TaskId))" />
+				<MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => DeleteTask(context.Item.TaskId))" />
+			</CellTemplate>
+		</TemplateColumn>
+	</Columns>
+	<PagerContent>
+		<MudDataGridPager T="SchedulerTask" />
+	</PagerContent>
+	<ChildRowContent>
+		<MudText Typo="Typo.body1">Start time: @context.Item.DateStart</MudText>
+			<MudText Typo="Typo.body1">End time: @context.Item.DateEnd</MudText>
+			<MudText Typo="Typo.body1">Time Length: @context.Item.TimeLength</MudText>
+			<MudText Typo="Typo.body1">Type: @context.Item.TaskType</MudText>
+			<MudText Typo="Typo.body1">Description: @context.Item.Description</MudText>
+			<MudText Typo="Typo.body1">ValuePerHr: @context.Item.MoneyPerHour</MudText>
+			<MudText Typo="Typo.body1">Bonus: @context.Item.Bonus</MudText>
+			<MudText Typo="Typo.body1">Place: @context.Item.Place</MudText>
+		</ChildRowContent>
+	</MudDataGrid>
+
+	<MudMessageBox @ref="mbox" Title="Warning" CancelText="Cancel">
+		<MessageContent>
+			Deleting can <b><i>not</i></b> be undone!
+		</MessageContent>
+		<YesButton>
+			<MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete!</MudButton>
+		</YesButton>
+	</MudMessageBox>
+
+	@code {
+	private MudMessageBox mbox { get; set; }
+	private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+	private DateRange _dateRange;
+	private DateRange dateRange { get { return _dateRange; } set { _dateRange = value; start = (DateTime)_dateRange.Start; end = (DateTime)_dateRange.End; GetUserTasks(); }}
+	private DateTime start = DateTime.Today;
+	private DateTime end = DateTime.Today;
+	private static IEnumerable<SchedulerTask> Tasks = new List<SchedulerTask>();
+	private double userIncome;
+
+	List<SchedulerPlace> places = new List<SchedulerPlace>();
+	private string placeFilter = "All";
+	private string typeFilter = "All";
+	private double minLength = 0;
+	private double maxLength = 0;
+	private double minBonus = 0;
+	private double maxBonus = 0;
+
+	private int dataSize = 0;
+
+	private async Task GetUserTasks()
+	{
+		Tasks = await schedulerService.GetUserTasks((DateTime)start, (DateTime)end);
+
+		StateHasChanged();
+	} 
+
+	private async Task GetUserTaskss()
+	{
+		Tasks = await schedulerService.GetUserTasks((DateTime)start, (DateTime)end);
+	} 
+	private double[] PreparePieData()
+	{
+		GetUserTaskss();
+		int count = 0;
+		double[] data = new double[places.Count];
+		foreach(var place in places)
+		{
+			double hours = Tasks.Where(n => n.TaskType == "Done" && n.Place == place.Name).Sum(n => n.TimeLength);
+
+			data[count] = hours;
+			count++;
+		}
+		return data;
+	}
+
+	private string[] PreparePie()
+	{
+		var arrayPlaces = places.Select(n => n.Name).ToArray();
+		return arrayPlaces;
+	}
+
+	private IEnumerable<SchedulerTask> FilteredList()
+	{
+		var listTofilter = Tasks;
+		if (placeFilter != "All")
+			listTofilter = listTofilter.Where(n => n.Place == placeFilter);
+
+		if (typeFilter != "All")
+			listTofilter = listTofilter.Where(n => n.TaskType == typeFilter);
+
+		if (minLength != 0)
+			listTofilter = listTofilter.Where(n => n.TimeLength >= minLength);
+
+		if (maxLength != 0)
+			listTofilter = listTofilter.Where(n => n.TimeLength <= maxLength);
+
+		if (minBonus != 0)
+			listTofilter = listTofilter.Where(n => n.Bonus >= minBonus);
+
+		if (maxBonus != 0)
+			listTofilter = listTofilter.Where(n => n.Bonus <= maxBonus);
+
+		return listTofilter;
+	}
+
+	private SchedulerInfoData SumData()
+	{
+		SchedulerInfoData data = new SchedulerInfoData();
+		data.TotalHours = FilteredList().Where(n => n.TaskType == "Planned" || n.TaskType == "Done").Sum(n => n.TimeLength);
+		data.ExpectedMoney = FilteredList().Where(n => n.TaskType == "Planned" || n.TaskType == "Done").Sum(n => n.MoneyPerHour * n.TimeLength);
+		data.MoneyEarned = FilteredList().Where(n => n.TaskType == "Done").Sum(n => n.MoneyPerHour * n.TimeLength);
+		data.bonus = FilteredList().Where(n => n.TaskType == "Done").Sum(n => n.Bonus);
+		data.Hours = FilteredList().Where(n => n.TaskType == "Done").Sum(n => n.TimeLength);
+		data.TotalPay = data.MoneyEarned + data.bonus;
+
+		return data;
+	}
+
+	private void ShowBtnPress(int nr)
+	{
+		SchedulerTask tmpTask = Tasks.First(f => f.TaskId == nr);
+		tmpTask.ShowDetails = !tmpTask.ShowDetails;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		GetUserTasks();
+		userIncome = await defaultIncomeService.GetUserDefaultIncome();
+		places = await _schedulerPlacesService.GetUserPlaces();
+	}
+
+	private void ShowPlaces()
+	{
+		DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
+		var result = dialogService.Show<SchedulerPlacesDialog>("Places", closeOnEscapeKey);
+	}
+
+	private void ShowSummary()
+	{
+		
+		SchedulerSummaryDialog.OpenSummary(dialogService);
+	}
+
+	private void SetDefaultIncome()
+		=> defaultIncomeService.SetUserDefaultIncome(userIncome);
+
+	private async Task AddNewTask()
+	{
+		var result = await schedulerService.AddTask(start, userIncome);
+
+		// if (result)
+		// {
+		// 	snackbar.Add("Your task was added succesfully!", Severity.Success);
+		// 	GetUserTasks();
+		// }
+		// else
+		// {
+		// 	snackbar.Add("There was an error adding your task!", Severity.Warning);
+		//}
+	}
+
+	private async Task EditTask(int taskId)
+	{
+		var selectedTask = Tasks.First(n => n.TaskId == taskId);
+
+		if (selectedTask != null)
+		{
+			var result = await schedulerService.EditTask((SchedulerTask)selectedTask);
+
+			if (result)
+			{
+				snackbar.Add("Your task was edited!", Severity.Success);
+				GetUserTasks();
+			}
+			else
+			{
+				snackbar.Add("Your task wasn`t edited", Severity.Warning);
+			}
+		}
+	}
+
+	private async Task DeleteTask(int taskId)
+	{
+		bool? confirmation = await mbox.ShowAsync();
+
+		if (confirmation == true)
+		{
+
+			var result = await schedulerService.DeleteTask(taskId);
+
+			if (result == true)
+			{
+				snackbar.Add("Task deleted sucesfully!", Severity.Success);
+				GetUserTasks();
+			}
+			else
+				snackbar.Add("There was an error while deleting your task!", Severity.Error);
+		}
+	}
+}

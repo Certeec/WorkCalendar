@@ -1,0 +1,118 @@
+@using Blazored.LocalStorage
+@using MudBlazor
+@using WorkCalendar.Client.Data.Scheduler
+@using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
+@inject ILocalStorageService _localStorageService;
+@inject ISchedulerTaskService _schedulerService
+@inject ISchedulerPlacesService _schedulerPlacesService;
+@inject IDialogService _dialogService;
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField T="DateTime" Label="Day" InputType="InputType.Date"   Format="yyyy-MM-dd" @bind-Value="date" />
+        <MudTextField T="TimeSpan" Label="Start Time" InputType="InputType.Time" @bind-Value="timeStart" />
+        <MudTextField T="TimeSpan" Label="End Date" InputType="InputType.Time" @bind-Value="timeEnd" />
+        <MudSelect T="string" Label="Place" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.Place" >
+            @foreach(var place in places )
+            {
+                <MudSelectItem Value="(place.Name)" />
+            }
+        </MudSelect>
+        <MudTextField T="string" Label="Description" @bind-Value="task.Description" ></MudTextField>
+        <MudTextField T="double" Label="Money Per Hour"  @bind-Value="task.MoneyPerHour"></MudTextField>
+        <MudTextField T="double" Label="Premium points" @bind-Value="task.PremiumPoints"></MudTextField>
+        <MudTextField T="double" Label="Bonus" @bind-Value="task.Bonus" ReadOnly="task.BonusByRevenue"></MudTextField>
+        <MudSelect T="string" Label="Type" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.TaskType">
+            <MudSelectItem Value="@("Planned")" />
+            <MudSelectItem Value="@("Done")" />
+            <MudSelectItem Value="@("Availabe")" />
+            <MudSelectItem Value="@("Unavailabe")" />
+        </MudSelect>
+        <MudCheckBox @bind-Value="task.BonusByRevenue" Label="Bonus by revenue"></MudCheckBox>
+        <MudTextField T="double" Label="Revenue"  @bind-Value="task.Revenue" ></MudTextField>
+        <MudTextField T="double" Label="Revenue Participation" @bind-Value="task.RevenueParticipation" ReadOnly="!task.BonusByRevenue"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        @if (isEditing)
+        {
+            <MudButton OnClick
+            ="Delete">Delete</MudButton>
+        }
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public DateTime date { get; set; }
+    [Parameter] public double income { get; set; }
+    [Parameter] public SchedulerTask schedulerTask{ get; set; }
+    SchedulerTask task = new SchedulerTask() { Description = string.Empty};
+    TimeSpan timeStart;
+    TimeSpan timeEnd;
+    List<SchedulerPlace> places = new List<SchedulerPlace>();
+    private bool isEditing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        places = await _schedulerPlacesService.GetUserPlaces();
+
+        if(schedulerTask != null)
+        {
+            task = schedulerTask;
+            date = task.DateStart.Date;
+            timeStart = task.DateStart.TimeOfDay;
+            timeEnd = task.DateEnd.TimeOfDay;
+            isEditing = true;
+        }
+        else
+        {
+            task.MoneyPerHour = income;
+            var place = places.FirstOrDefault<SchedulerPlace>(n => n.Name != string.Empty);
+            if (place != null)
+                task.Place = place.Name;
+
+            task.TaskType = "Planned";
+        }
+
+    }
+
+    private void Submit()
+    {
+        if (task.DateStart > task.DateEnd)
+            MudDialog.Cancel();
+
+        task.DateStart = date + timeStart;
+        task.DateEnd = date + timeEnd;
+        MudDialog.Close<SchedulerTask>(task);
+    }
+
+    public static async Task<SchedulerTask> OpenAddTask(IDialogService dialogService ,DateTime time, double income)
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
+        var parameters = new DialogParameters();
+        parameters.Add("date", time);
+        parameters.Add("Income", income);
+        var result = await dialogService.ShowAsync<SchedulerTaskDialog>("Add new task", parameters, closeOnEscapeKey);
+
+        return await result.GetReturnValueAsync<SchedulerTask>();
+    }
+
+    public static async Task<SchedulerTask> OpenEditTask(IDialogService dialogService, SchedulerTask task)
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
+        var parameters = new DialogParameters();
+        parameters.Add("schedulerTask", task);
+        var result = await dialogService.ShowAsync<SchedulerTaskDialog>("Edit task", parameters, closeOnEscapeKey);
+
+        return await result.GetReturnValueAsync<SchedulerTask>();
+    }
+
+    void Delete()
+    {
+        _schedulerService.DeleteTask(task.TaskId);
+        Cancel();
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

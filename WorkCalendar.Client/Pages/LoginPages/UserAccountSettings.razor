@@ -1,0 +1,73 @@
+﻿@page "/UserAccountSettings"
+@using WorkCalendar.Client.Data.MessageBox
+@inject NavigationManager navigationManager
+@inject IUserActions userActions
+@inject IMessageBoxHandler messageHandler
+@inject IUserLogsActions userLogsActions
+
+@using System.Net.Http.Json
+@inject HttpClient httpClient
+
+<MudText Typo="Typo.h2">Calendar Related</MudText>
+<MudItem>
+<MudItem Style="display:flex;">
+    <MudCard Outlined="true">
+    <MudCardContent >
+        <MudText>Scheduler</MudText>
+        <MudText Typo="Typo.body2">Allows you to count your tasks.</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Href="/WorkScheduler/WorkPlanner"
+                    Rel="nofollow"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary">
+            Open
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+</MudItem>
+<MudItem Style="display:flex;"> 
+<MudCard Outlined="true">
+    <MudCardContent>
+        <MudText>Calendar</MudText>
+        <MudText Typo="Typo.body2">Your calendar where you can plan your month!.</MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Href="/WorkScheduler/Calendar"
+                   Rel="nofollow"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Open
+        </MudButton>
+    </MudCardActions>
+</MudCard>
+</MudItem>
+</MudItem>
+<MudTable Items="@Elements.Take(4)" Class="d-flex align-end" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Date</MudTh>
+        <MudTh>Login time</MudTh>
+        <MudTh>Ip</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nr">@context.date</MudTd>
+            <MudTd DataLabel="Sign">@context.duration</MudTd>
+            <MudTd DataLabel="Name">@context.ip</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    @code {
+    private IEnumerable<LoginHistory> Elements = new List<LoginHistory>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result =  await userLogsActions.GetUserLogInHistory();
+        Elements = result.OrderByDescending(n => n.date);
+    }
+
+    private void NavigateTo(string name)
+    {
+        navigationManager.NavigateTo(name);
+    }
+
+}

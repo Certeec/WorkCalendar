@@ -1,0 +1,31 @@
+@using Blazored.LocalStorage
+@using WorkCalendar.Client.Data.Scheduler
+@using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
+@inject ILocalStorageService _localStorageService;
+@inject ISchedulerTaskService _schedulerService
+@inject ISchedulerPlacesService _schedulerPlacesService;
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField T="string" Label="Place name" @bind-Value="place.Name"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    SchedulerPlace place = new SchedulerPlace();
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    private void Submit()
+    {
+        MudDialog.Close<SchedulerPlace>(place);
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

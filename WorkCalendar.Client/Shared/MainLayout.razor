@@ -1,0 +1,56 @@
+﻿@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Authorization
+@using WorkCalendar.Client.Data.Auth
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider _userActions
+@inject ILocalStorageService localStorageService
+@inject NavigationManager navigationManager
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Style="background-image: linear-gradient( 109.6deg,  rgba(0,182,255,1) 11.2%, rgba(102,51,153,1) 91.1% );">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Success" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                <MudText Typo="Typo.h5"  Class="ml-3">Welcome </MudText> 
+                <MudText Typo="Typo.h5" @onclick="Logout" Class="ml-3">Logout </MudText>
+        </Authorized>
+        </AuthorizeView>
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Surface" Edge="Edge.End" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <div style="background-image:none;background-color:cadetblue;" class="sidebar">
+            <NavMenu />
+        </div>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+@code {
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    void Logout()
+    {
+        var stateProvider = (AuthStateProvider)_userActions;
+        navigationManager.NavigateTo("/login");
+        stateProvider.NotifyUserLogout();
+        localStorageService.ClearAsync();
+    }
+
+    string GetUserName()
+    {
+        return string.Empty;
+    }
+}

@@ -1,0 +1,97 @@
+﻿
+@page "/UserPanel"
+@layout MainLayout
+@using Microsoft.AspNetCore.Authorization
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@attribute [Authorize]
+@inject NavigationManager navigationManager
+
+<NotAuthorized>
+    @{
+        navigationManager.NavigateTo("login");
+    }
+</NotAuthorized>
+
+<PageTitle>UserPanelLogin</PageTitle>
+<label for="username">username</label> 
+<label for="username">@currentUser.Login</label>
+<br />
+<label for="password">password</label> 
+<label for="password">@currentUser.Password</label>
+<br />
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br /><br />
+<br />
+<br />
+<br />
+<br />
+
+
+<br />
+<br /><br />
+<br />
+<br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Czas logowania</th>
+                <th>Ip</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var loginHistory in userLoginHistory)
+        {
+                                <tr>
+                                            <td>@loginHistory.date</td>
+                                            <td>@loginHistory.duration</td>
+                                            <td>@loginHistory.ip</td>
+                                </tr>
+        }
+        </tbody>
+    </table>
+
+
+
+@code {
+    User currentUser = new User();
+    List<LoginHistory> userLoginHistory = new List<LoginHistory>();
+
+
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentUser.Login = "hej";
+        currentUser.Password = "MyNewPw";
+        var history = new LoginHistory()
+            {
+                date = DateTime.Now,
+                duration = DateTime.MinValue,
+                ip = "52.525.626.727"
+            };
+
+        var history2 = new LoginHistory()
+            {
+                date = DateTime.Now,
+                duration = DateTime.MinValue,
+                ip = "709.25.66.117"
+            };
+
+        var history3 = new LoginHistory()
+            {
+                date = DateTime.Now,
+                duration = DateTime.MinValue,
+                ip = "02.15.626.76"
+            };
+            userLoginHistory.Add(history);
+        userLoginHistory.Add(history2);
+        userLoginHistory.Add(history3);
+    }
+}

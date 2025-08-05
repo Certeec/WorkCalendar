@@ -1,0 +1,33 @@
+﻿@page "/Login"
+@using Microsoft.AspNetCore.Authorization
+@using WorkCalendar.Client.Data.MessageBox
+@inject NavigationManager navigationManager
+@inject IUserActions userActions
+@inject IMessageBoxHandler messageHandler
+@attribute [AllowAnonymous]
+
+
+<MudContainer Class="mt-16" MaxWidth="MaxWidth.Medium">
+    <MudGrid Spacing="30" Class="mt-16">
+        <MudItem xs="7">
+            <MudText Typo="Typo.h5" GutterBottom="true">Login in</MudText>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField T="string" @bind-Value="login" Label="login" />
+                </MudItem>
+                <MudItem xs="12">
+
+                    <MudTextField T="string" @bind-Value="password" Label="password" InputType="InputType.Password"  />
+                </MudItem>
+                <MudItem xs="12" Class="d-flex justify-center">
+                     <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary" Size="Size.Large" @onclick="LoginIn" Class="mt-8">Login In</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+@if (messageHandler.IsVisible() == true)
+{
+    <MudAlert Severity="Severity.Info" d-flex="align-bottom" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => messageHandler.SetInvisible())"> @messageHandler.GetMessage()  </MudAlert>
+}
+

@@ -1,0 +1,54 @@
+@using Blazored.LocalStorage
+@using WorkCalendar.Client.Data.Scheduler
+@using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
+@inject ILocalStorageService _localStorageService;
+@inject ISchedulerTaskService _schedulerService
+@inject ISchedulerPlacesService _schedulerPlacesService;
+@inject IDialogService _dialogService;
+
+<MudDialog>
+    <DialogContent>
+        <MudDataGrid Items="@places" ReadOnly="false"
+                     Bordered="true" Dense="true">
+            <Columns>
+                <PropertyColumn Property="x => x.PlaceId" Title="Nr" IsEditable="false"/>
+                <PropertyColumn Property="x => x.Name" IsEditable="true"/>
+            </Columns>
+        </MudDataGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="AddNew">Add new</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public DateTime date { get; set; }
+    SchedulerTask task = new SchedulerTask() { Description = string.Empty};
+    List<SchedulerPlace> places = new List<SchedulerPlace>();
+    private List<string> _events = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        places = await _schedulerPlacesService.GetUserPlaces();
+    }
+
+    private async Task AddNew()
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
+        var result = _dialogService.Show<NewSchedulerPlacesDialog>("Add new", closeOnEscapeKey);
+        var place = await result.GetReturnValueAsync<SchedulerPlace>();
+
+        _schedulerPlacesService.AddUserPlace(place);
+        places = await _schedulerPlacesService.GetUserPlaces();
+        StateHasChanged();
+    }
+
+    private void Submit()
+    {
+        MudDialog.Close<SchedulerTask>(task);
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

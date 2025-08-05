@@ -1,0 +1,22 @@
+﻿CREATE TABLE [dbo].[GeneratedSchedulerCart] (
+[UniqueId] int ,
+[CreatorUserId] int NOT NULL ,
+[UserId] int NOT NULL ,
+[UrlKey] varchar(50) NULL,
+[IsDeleted] bit NOT NULL ,
+[DeletedDate] datetime,
+[ModificationDate] datetime,
+[ModifiedBy] int,
+[PublishFrom] datetime,
+[PublishTo] datetime,
+[DateFrom] datetime NOT NULL ,
+[DateTo] datetime NOT NULL ,
+[ShowAvailable] bit NOT NULL ,
+[ShowUnavailable] bit NOT NULL ,
+[ShowPlanned] bit NOT NULL ,
+[ShowDone] bit NOT NULL ,
+[ShowIncome] bit NOT NULL ,
+[ShowBonus] bit NOT NULL ,
+[ShowDescription] bit NOT NULL ,
+[ShowPremiumPoints] bit NOT NULL
+)

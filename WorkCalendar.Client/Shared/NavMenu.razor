@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+
+<div class="@NavMenuCssClass" >
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+           <AuthorizeView>
+            <Authorized>
+        <MudNavGroup Title="Work Scheduler" class="nav-link" Expanded="false">
+            <MudNavLink Href="/WorkScheduler/Calendar">Calendar</MudNavLink>
+            <MudNavLink Href="/WorkScheduler/SchedulerAnalyzer">Analyzer</MudNavLink>
+        </MudNavGroup>
+            </Authorized>
+        </AuthorizeView>
+         <AuthorizeView>
+            <NotAuthorized>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="login">
+                <span class="oi oi-plus" aria-hidden="true"></span> Login
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="register">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Register
+            </NavLink>
+        </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = false;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
