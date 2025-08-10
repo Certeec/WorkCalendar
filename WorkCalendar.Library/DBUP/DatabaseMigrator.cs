@@ -15,34 +15,34 @@ namespace WorkCalendar.Library.DBUP
     {
         public static void Run(IConfiguration configuration)
         {
-            string connectionString = configuration["ConnectionString"];
+//            string connectionString = configuration["ConnectionString"];
 
-            var executingAssembly = typeof(DatabaseMigrator).Assembly.Location;
-            FileInfo fi = new FileInfo(executingAssembly);
+//            var executingAssembly = typeof(DatabaseMigrator).Assembly.Location;
+//            FileInfo fi = new FileInfo(executingAssembly);
 
-            var executingPath = Path.Combine(fi.DirectoryName, "DBUP", "SCRIPTS");
+//            var executingPath = Path.Combine(fi.DirectoryName, "DBUP", "SCRIPTS");
 
-              var upgrader =  DeployChanges.To
-                    .SqlDatabase(connectionString)
-                    .WithScriptsFromFileSystem(executingPath)
-                    .LogToConsole()
-                    .Build();
+//              var upgrader =  DeployChanges.To
+//                    .SqlDatabase(connectionString)
+//                    .WithScriptsFromFileSystem(executingPath)
+//                    .LogToConsole()
+//                    .Build();
 
-            var result = upgrader.PerformUpgrade();
+//            var result = upgrader.PerformUpgrade();
 
-            if (!result.Successful)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(result.Error);
-                Console.ResetColor();
-#if DEBUG
-                Console.ReadLine();
-#endif
-            }
+//            if (!result.Successful)
+//            {
+//                Console.ForegroundColor = ConsoleColor.Red;
+//                Console.WriteLine(result.Error);
+//                Console.ResetColor();
+//#if DEBUG
+//                Console.ReadLine();
+//#endif
+//            }
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Success!");
-            Console.ResetColor();
+//            Console.ForegroundColor = ConsoleColor.Green;
+//            Console.WriteLine("Success!");
+//            Console.ResetColor();
         }
 
 
