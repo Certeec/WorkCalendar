@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkCalendar.Api", "WorkCal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{4629C446-71A4-4553-B071-524E662B01A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{286546FD-475E-48BA-8366-D82C252DC0F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOModels", "DTOModels\DTOModels.csproj", "{F1B97480-9332-4BC6-B2E1-3850943E7EEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{4629C446-71A4-4553-B071-524E662B01A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4629C446-71A4-4553-B071-524E662B01A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4629C446-71A4-4553-B071-524E662B01A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{286546FD-475E-48BA-8366-D82C252DC0F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{286546FD-475E-48BA-8366-D82C252DC0F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{286546FD-475E-48BA-8366-D82C252DC0F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{286546FD-475E-48BA-8366-D82C252DC0F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1B97480-9332-4BC6-B2E1-3850943E7EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1B97480-9332-4BC6-B2E1-3850943E7EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1B97480-9332-4BC6-B2E1-3850943E7EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1B97480-9332-4BC6-B2E1-3850943E7EEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

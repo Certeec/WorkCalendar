@@ -28,7 +28,6 @@ builder.Services.AddHttpClient();
 
 // Twoje serwisy
 builder.Services.AddAuthorizationCore();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddTransient<IUserActions, UserActions>();
 builder.Services.AddSingleton<IMessageBoxHandler, MessageBoxHandler>();
 builder.Services.AddScoped<IUserLogsActions, UserLogsActions>();

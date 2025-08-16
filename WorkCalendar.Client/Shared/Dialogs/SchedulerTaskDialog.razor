@@ -1,4 +1,5 @@
 @using Blazored.LocalStorage
+@using DTOModels
 @using MudBlazor
 @using WorkCalendar.Client.Data.Scheduler
 @using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
@@ -50,7 +51,7 @@
     SchedulerTask task = new SchedulerTask() { Description = string.Empty};
     TimeSpan timeStart;
     TimeSpan timeEnd;
-    List<SchedulerPlace> places = new List<SchedulerPlace>();
+    List<SchedulerPlaceDTO> places = new List<SchedulerPlaceDTO>();
     private bool isEditing = false;
 
     protected override async Task OnInitializedAsync()
@@ -68,7 +69,7 @@
         else
         {
             task.MoneyPerHour = income;
-            var place = places.FirstOrDefault<SchedulerPlace>(n => n.Name != string.Empty);
+            var place = places.FirstOrDefault<SchedulerPlaceDTO>(n => n.Name != string.Empty);
             if (place != null)
                 task.Place = place.Name;
 

@@ -17,6 +17,7 @@ namespace DAL
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+            
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

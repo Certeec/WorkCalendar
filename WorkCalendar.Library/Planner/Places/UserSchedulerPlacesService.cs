@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Models.DatabaseModels;
 using System.Data;
 using System.Text;
 
@@ -31,7 +32,7 @@ namespace WorkCalendar.Library.Planner.Places
                 {
                     var place = new SchedulerPlace();
                     place.PlaceId = reader.GetInt32("PlaceId");
-                    place.Name = reader.GetString("PlaceName");
+                    place.PlaceName = reader.GetString("PlaceName");
                     place.IsActive = reader.GetBoolean("IsActive");
 
                     places.Add(place);
@@ -51,7 +52,7 @@ namespace WorkCalendar.Library.Planner.Places
                 com.Connection = sqlCon;
                 com.CommandType = CommandType.Text;
                 com.Parameters.AddWithValue(@"UserId", userId);
-                com.Parameters.AddWithValue(@"PlaceName", place.Name);
+                com.Parameters.AddWithValue(@"PlaceName", place.PlaceName);
                 com.Parameters.AddWithValue(@"IsActive", 1);
                 com.CommandText = "INSERT INTO USERSCHEDULERPLACES (UserId, PlaceName, IsActive) VALUES (@UserId, @PlaceName, @IsActive)";
                 result = com.ExecuteNonQuery();
