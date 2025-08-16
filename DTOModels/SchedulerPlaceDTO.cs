@@ -1,6 +1,6 @@
-﻿namespace WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
+﻿namespace DTOModels
 {
-    public class SchedulerPlace
+    public class SchedulerPlaceDTO
     {
         public int PlaceId { get; set; }
         public string Name { get; set; }

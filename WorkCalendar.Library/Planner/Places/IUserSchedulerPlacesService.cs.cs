@@ -1,4 +1,6 @@
 ﻿
+using Models.DatabaseModels;
+
 namespace WorkCalendar.Library.Planner.Places
 {
     public interface IUserSchedulerPlacesService

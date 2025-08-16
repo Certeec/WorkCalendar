@@ -1,4 +1,6 @@
-﻿namespace WorkCalendar.Library.Accounts.UserHistory
+﻿using Models.DatabaseModels;
+
+namespace WorkCalendar.Library.Accounts.UserHistory
 {
     public interface IUserLogsRepository
     {

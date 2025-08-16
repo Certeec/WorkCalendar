@@ -28,7 +28,7 @@ namespace WorkCalendar.Library.Accounts
         {
             credentials.Password = _hasher.HashText(credentials.Password);
             var user = _accountsRepository.GetUser(credentials);
-            if (user.Login == null)
+            if (user == null)
             {
                 return new UserToken();
             }
@@ -60,7 +60,7 @@ namespace WorkCalendar.Library.Accounts
 
             user.Token = tokenHandler.WriteToken(token);
 
-            _userLogsRepository.RegisterLoginIn(user.UserId);
+              _userLogsRepository.RegisterLoginIn(user.UserId);
 
             UserToken userToken = new UserToken();
             userToken.Token = user.Token;

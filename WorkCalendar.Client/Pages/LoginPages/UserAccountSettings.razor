@@ -1,4 +1,5 @@
 ﻿@page "/UserAccountSettings"
+@using Models.DatabaseModels
 @using WorkCalendar.Client.Data.MessageBox
 @inject NavigationManager navigationManager
 @inject IUserActions userActions
@@ -50,19 +51,19 @@
         <MudTh>Ip</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Nr">@context.date</MudTd>
-            <MudTd DataLabel="Sign">@context.duration</MudTd>
-            <MudTd DataLabel="Name">@context.ip</MudTd>
+        <MudTd DataLabel="Nr">@context.LoginDate</MudTd>
+            <MudTd DataLabel="Sign">@context.Duration</MudTd>
+            <MudTd DataLabel="Name">@context.UserIp</MudTd>
         </RowTemplate>
     </MudTable>
 
-    @code {
-    private IEnumerable<LoginHistory> Elements = new List<LoginHistory>();
+@code {
+    private IEnumerable<UserLogInHistory> Elements = new List<UserLogInHistory>();
 
     protected override async Task OnInitializedAsync()
     {
         var result =  await userLogsActions.GetUserLogInHistory();
-        Elements = result.OrderByDescending(n => n.date);
+        Elements = result.OrderByDescending(n => n.LoginDate);
     }
 
     private void NavigateTo(string name)

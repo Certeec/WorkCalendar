@@ -1,4 +1,4 @@
-﻿using WorkCalendar.Library.Models;
+﻿using Models.DatabaseModels;
 
 namespace WorkCalendar.Library.Planner
 {

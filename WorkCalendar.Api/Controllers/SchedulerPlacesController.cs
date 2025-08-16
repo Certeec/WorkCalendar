@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DTOModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Models.DatabaseModels;
 using WorkCalendar.Library.Planner.Places;
 
 
@@ -35,15 +37,21 @@ namespace WorkCalendar.Api.Controllers
 
             if(userLoginId != -1){
 				var result = _userSchedulerPlacesService.GetUserPlaces(userLoginId);
+                List<SchedulerPlaceDTO> schedulerPlaceDTOs = result.Select(place => new SchedulerPlaceDTO
+                {
+                    PlaceId = place.PlaceId,
+                    Name = place.PlaceName,
+                    IsActive = place.IsActive
+                }).ToList();
 
-				return Ok(result);
+				return Ok(schedulerPlaceDTOs);
 			};
 
             return BadRequest();
         }
 
         [HttpPost]
-        public IActionResult AddUserPlace([FromBody]SchedulerPlace place)
+        public IActionResult AddUserPlace([FromBody]SchedulerPlaceDTO placeDTO)
         {
 			int userLoginId = -1;
 
@@ -57,7 +65,13 @@ namespace WorkCalendar.Api.Controllers
 				Console.WriteLine("Found exception" + ex.Message);
 			}
 
-
+            SchedulerPlace place = new SchedulerPlace()
+            {
+                PlaceId = placeDTO.PlaceId,
+                PlaceName = placeDTO.Name,
+                IsActive = placeDTO.IsActive,
+            };
+            
 			var result = _userSchedulerPlacesService.AddUserPlace(userLoginId, place);
 
             return result == true ? Ok(result) : BadRequest();

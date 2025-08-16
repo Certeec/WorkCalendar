@@ -29,9 +29,6 @@ namespace WorkCalendar.Library.Planner.ConfigurableDefaultvalues
                 {
                     defaultIncome = reader.GetDouble("MoneyPerHour");
                 }
-
-                
-
             }
 
             Console.WriteLine("Received income = " + defaultIncome.ToString());

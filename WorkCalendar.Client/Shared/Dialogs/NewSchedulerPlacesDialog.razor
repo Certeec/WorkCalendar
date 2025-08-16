@@ -1,4 +1,5 @@
 @using Blazored.LocalStorage
+@using DTOModels
 @using WorkCalendar.Client.Data.Scheduler
 @using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
 @inject ILocalStorageService _localStorageService;
@@ -16,7 +17,7 @@
 </MudDialog>
 @code {
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
-    SchedulerPlace place = new SchedulerPlace();
+    SchedulerPlaceDTO place = new SchedulerPlaceDTO();
 
     protected override async Task OnInitializedAsync()
     {
@@ -24,7 +25,7 @@
 
     private void Submit()
     {
-        MudDialog.Close<SchedulerPlace>(place);
+        MudDialog.Close<SchedulerPlaceDTO>(place);
     }
 
     void Cancel() => MudDialog.Cancel();

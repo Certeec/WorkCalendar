@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Models.DatabaseModels;
 using System.Data;
 using System.Text;
 namespace WorkCalendar.Library.Accounts.UserHistory
@@ -32,9 +33,16 @@ namespace WorkCalendar.Library.Accounts.UserHistory
                 {
                     UserLogInHistory history = new UserLogInHistory();
                     history.UserId = sqlData.GetInt32("UserId");
-                    history.date = sqlData.GetDateTime("LoginDate");
-                    history.duration = sqlData.GetDateTime("Duration");
-                    history.ip = sqlData.GetString("UserIp");
+                    history.LoginDate = sqlData.GetDateTime("LoginDate");
+                    try
+                    {
+                        history.Duration = sqlData.GetDateTime("Duration");
+                    }
+                    catch(Exception e)
+                    {
+                        history.Duration = DateTime.MinValue;
+                    }
+                    history.UserIp = sqlData.GetString("UserIp");
                     userLogs.Add(history);
                 }
 
@@ -52,9 +60,8 @@ namespace WorkCalendar.Library.Accounts.UserHistory
                 com.CommandType = CommandType.Text;
                 com.Parameters.AddWithValue("@UserId", userId);
                 com.Parameters.AddWithValue("@LoginDate", DateTime.Now);
-                com.Parameters.AddWithValue("@Duration", 5);
                 com.Parameters.AddWithValue("@UserIp", "100.128.0.1");
-                com.CommandText = @"INSERT INTO UserLoginLogs (UserId, LoginDate, Duration, UserIp) VALUES (@UserID, @LoginDate, @Duration, @UserIp)";
+                com.CommandText = @"INSERT INTO UserLoginLogs (UserId, LoginDate, UserIp) VALUES (@UserID, @LoginDate, @UserIp)";
                 com.ExecuteNonQuery();
             }
         }

@@ -1,7 +1,11 @@
-﻿namespace WorkCalendar.Client.Data.Accounts
+﻿
+
+using Models.DatabaseModels;
+
+namespace WorkCalendar.Client.Data.Accounts
 {
     public interface IUserLogsActions
     {
-        public Task<List<LoginHistory>> GetUserLogInHistory();
+        public Task<List<UserLogInHistory>> GetUserLogInHistory();
     }
 }
