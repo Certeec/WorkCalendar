@@ -23,18 +23,18 @@ namespace WorkCalendar.Library.Accounts
                 Status = true
             };
 
-            _context.Add<UserAccount>(userAccount);
+            _context.Accounts.Add(userAccount);
             return _context.SaveChanges() == 1;
         }
 
         public UserAccount GetUser(LoginCredentialsDTO credentials)
         {
-            return _context.Set<UserAccount>().FirstOrDefault(n => n.Login == credentials.Login && n.Password == credentials.Password);
+            return _context.Accounts.FirstOrDefault(n => n.Login == credentials.Login && n.Password == credentials.Password);
         }
 
         public int? GetUserID(LoginCredentialsDTO credentials)
         {
-            var user =_context.Set<UserAccount>().FirstOrDefault(n => n.Login == credentials.Login && n.Password == credentials.Password);
+            var user =_context.Accounts.FirstOrDefault(n => n.Login == credentials.Login && n.Password == credentials.Password);
             return user?.UserId;
         }
     }

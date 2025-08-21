@@ -14,13 +14,13 @@ namespace WorkCalendar.Library.Planner.Places
 
         public bool AddUserPlace(int userId, SchedulerPlace place)
         {
-            _dbContext.Set<SchedulerPlace>().Add(place);
+            _dbContext.schedulerPlaces.Add(place);
             return _dbContext.SaveChanges() == 1;
         }
 
         public List<SchedulerPlace> GetUserPlaces(int userId)
         {
-            return _dbContext.Set<SchedulerPlace>().Where(n => n.UserId == userId).ToList();
+            return _dbContext.schedulerPlaces.Where(n => n.UserId == userId).ToList();
         }
     }
 }

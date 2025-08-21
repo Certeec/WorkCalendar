@@ -15,7 +15,7 @@ namespace WorkCalendar.Library.Planner.ConfigurableDefaultvalues
         public bool AddDefaultUserIncome(int userId, double moneyPerHour)
         {
             var userIncome = new UserSchedulerDefaultHourIncome() { MoneyPerHour = moneyPerHour, UserId = userId };
-            _context.Set<UserSchedulerDefaultHourIncome>().Add(userIncome);
+            _context.DefaultIncomes.Add(userIncome);
             return _context.SaveChanges() == 1;
         }
 
@@ -27,10 +27,10 @@ namespace WorkCalendar.Library.Planner.ConfigurableDefaultvalues
 
         public bool UpdateDefaultUserIncome(int userId, double moneyPerHour)
         {
-            var result = _context.Set<UserSchedulerDefaultHourIncome>().FirstOrDefault(n => n.UserId == userId);
+            var result = _context.DefaultIncomes.FirstOrDefault(n => n.UserId == userId);
             result.MoneyPerHour = moneyPerHour;
 
-            _context.Set<UserSchedulerDefaultHourIncome>().Update(result);
+            _context.DefaultIncomes.Update(result);
             return _context.SaveChanges() == 1;
         }
     }

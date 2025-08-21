@@ -23,12 +23,12 @@ namespace WorkCalendar.Library.Planner
         public bool DeleteTask(int userId, int taskId)
         {
             var task = GetSchedulerTaskById(userId, taskId);
-             _context.Set<SchedulerTask>().Remove(task);
+             _context.schedulerTasks.Remove(task);
             return _context.SaveChanges() == 1;
         }
 
         public List<SchedulerTask> GetAllSchedulerTasks(int userId)
-            => _context.Set<SchedulerTask>().Where(n => n.UserId == userId).ToList(); 
+            => _context.schedulerTasks.Where(n => n.UserId == userId).ToList(); 
        
 
         public List<SchedulerTask> GetSchedulerGeneratorTasksWithConfig(SchedulerGeneratorConfig config)
@@ -37,10 +37,10 @@ namespace WorkCalendar.Library.Planner
         }
 
         public SchedulerTask GetSchedulerTaskById(int userId, int taskId)
-            => _context.Set<SchedulerTask>().FirstOrDefault(n => n.TaskId == taskId && n.UserId == userId);
+            => _context.schedulerTasks.FirstOrDefault(n => n.TaskId == taskId && n.UserId == userId);
 
         public List<SchedulerTask> GetSchedulerTasks(int userId, DateTime from, DateTime to)
-            => _context.Set<SchedulerTask>().Where(n => n.UserId == userId && n.DateStart >= from && n.DateEnd <= to).ToList();
+            => _context.schedulerTasks.Where(n => n.UserId == userId && n.DateStart >= from && n.DateEnd <= to).ToList();
 
         public bool UpdateTask(int userId, SchedulerTask task)
         {
@@ -48,7 +48,7 @@ namespace WorkCalendar.Library.Planner
             if (!task.Equals(checkTask))
                 return false;
 
-            _context.Set<SchedulerTask>().Update(task);
+            _context.schedulerTasks.Update(task);
             return _context.SaveChanges() == 1;
         }
     }

@@ -1,11 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Models.DatabaseModels;
 
 namespace DAL
 {
     public class DatabaseContext : DbContext
     {
         private readonly string _connectionString;
+        public DbSet<UserAccount> Accounts { get; set; }
+        public DbSet<UserLogInHistory> UsersLogHistory { get; set; }
+        public DbSet<UserSchedulerDefaultHourIncome> DefaultIncomes { get; set; }
+        public DbSet<SchedulerPlace> schedulerPlaces { get; set; }
+        public DbSet<SchedulerTask> schedulerTasks { get; set; }
 
         public DatabaseContext(IConfiguration configuration)
         {
