@@ -10,6 +10,7 @@ namespace DAL.Configurations
         {
             builder.HasKey(n => n.LogId);
             builder.Property(e => e.Duration).HasDefaultValue(DateTime.MinValue);
+            builder.ToTable("UserLoginLogs");
         }
     }
 }

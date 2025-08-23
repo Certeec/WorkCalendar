@@ -13,6 +13,7 @@ namespace WorkCalendar.Api.Controllers
     public class UserSchedulerDefaultHourIncomeController : ControllerBase
     {
         IUserDefaultIncomeService _userDefaultIncomeService;
+        private static readonly double _defaultValue = 0;
         public UserSchedulerDefaultHourIncomeController(IUserDefaultIncomeService userDefaultIncomeService)
         {
             _userDefaultIncomeService = userDefaultIncomeService;
@@ -25,15 +26,10 @@ namespace WorkCalendar.Api.Controllers
 
             var result = _userDefaultIncomeService.GetUserDefaultIncome(userLoginId);
 
-            // to optimalize
+            if (result == null)
+                return Ok(_defaultValue);
 
-            if(result == -1)
-            {
-                _userDefaultIncomeService.SetUserDefaultIncome(userLoginId, 0);
-                return Ok(0);
-            }
-
-            return Ok(result);
+            return Ok(result.MoneyPerHour);
         }
 
         [HttpPut]

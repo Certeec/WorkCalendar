@@ -2,7 +2,6 @@
 
 namespace Models.DatabaseModels
 {
-    [Table("UserLoginLogs")]
     public class UserLogInHistory
     {
         public int LogId { get; set; }

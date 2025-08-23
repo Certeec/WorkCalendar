@@ -2,7 +2,6 @@
 
 namespace Models.DatabaseModels
 {
-    [Table("Accounts")]
     public class UserAccount
     {
         public int UserId { get; set; }
@@ -12,7 +11,6 @@ namespace Models.DatabaseModels
         public string Email { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? LastLogin { get; set; }
-        [NotMapped]
         public string Token { get; set; }
     }
 }

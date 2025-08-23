@@ -42,7 +42,7 @@ namespace DAL.Migrations
 
                     b.HasKey("PlaceId");
 
-                    b.ToTable("UserSchedulerPlaces");
+                    b.ToTable("UserSchedulerPlaces", (string)null);
                 });
 
             modelBuilder.Entity("Models.DatabaseModels.SchedulerTask", b =>
@@ -96,7 +96,7 @@ namespace DAL.Migrations
 
                     b.HasKey("TaskId");
 
-                    b.ToTable("WorkPlannerTasks");
+                    b.ToTable("WorkPlannerTasks", (string)null);
                 });
 
             modelBuilder.Entity("Models.DatabaseModels.UserAccount", b =>
@@ -130,7 +130,7 @@ namespace DAL.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("Models.DatabaseModels.UserLogInHistory", b =>
@@ -157,7 +157,7 @@ namespace DAL.Migrations
 
                     b.HasKey("LogId");
 
-                    b.ToTable("UserLoginLogs");
+                    b.ToTable("UserLoginLogs", (string)null);
                 });
 
             modelBuilder.Entity("Models.DatabaseModels.UserSchedulerDefaultHourIncome", b =>
@@ -170,7 +170,7 @@ namespace DAL.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserSchedulerDefaultHourIncome");
+                    b.ToTable("UserSchedulerDefaultHourIncome", (string)null);
                 });
 #pragma warning restore 612, 618
         }

@@ -2,12 +2,10 @@
 
 namespace Models.DatabaseModels
 {
-    [Table("WorkPlannerTasks")]
     public class SchedulerTask
     {
         public int UserId { get; set; }
         public int TaskId { get; set; }
-        [NotMapped]
         public bool ShowDetails { get; set; }
         public DateTime DateStart { get; set; }
         public DateTime DateEnd { get; set; }

@@ -13,6 +13,7 @@ namespace DAL.Configurations
         {
             builder.HasKey(n => n.UserId);
             builder.Property(n => n.UserId).ValueGeneratedNever();
+            builder.ToTable(nameof(UserSchedulerDefaultHourIncome));
         }
     }
 }

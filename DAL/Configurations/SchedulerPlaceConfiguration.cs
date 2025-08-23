@@ -10,6 +10,7 @@ namespace DAL.Configurations
         public void Configure(EntityTypeBuilder<SchedulerPlace> builder)
         {
             builder.HasKey(n => n.PlaceId);
+            builder.ToTable("UserSchedulerPlaces");
         }
     }
 }

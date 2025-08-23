@@ -5,8 +5,6 @@ using Models.DatabaseModels;
 using WorkCalendar.Library.Planner.Places;
 
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace WorkCalendar.Api.Controllers
 {
     [Authorize]
@@ -67,12 +65,13 @@ namespace WorkCalendar.Api.Controllers
 
             SchedulerPlace place = new SchedulerPlace()
             {
+                UserId = userLoginId,
                 PlaceId = placeDTO.PlaceId,
                 PlaceName = placeDTO.Name,
                 IsActive = placeDTO.IsActive,
             };
             
-			var result = _userSchedulerPlacesService.AddUserPlace(userLoginId, place);
+			var result = _userSchedulerPlacesService.AddUserPlace(place);
 
             return result == true ? Ok(result) : BadRequest();
         }

@@ -9,6 +9,8 @@ namespace DAL.Configurations
         public void Configure(EntityTypeBuilder<SchedulerTask> builder)
         {
             builder.HasKey(n => n.TaskId);
+            builder.ToTable("WorkPlannerTasks");
+            builder.Ignore("ShowDetails");
         }
     }
 }

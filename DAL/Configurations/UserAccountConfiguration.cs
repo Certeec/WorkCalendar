@@ -10,6 +10,7 @@ namespace DAL.Configurations
         {
             builder.HasKey(n => n.UserId);
             builder.Ignore(n => n.Token);
+            builder.ToTable("Accounts");
         }
     }
 }

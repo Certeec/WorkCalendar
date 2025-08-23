@@ -72,7 +72,9 @@ namespace MedicalCompanyManagement.API.Controllers
         {
             var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
 
-            var result = _workPlannerService.UpdateTask(userLoginId, task);
+            task.UserId = userLoginId;
+
+            var result = _workPlannerService.UpdateTask(task);
 
             return result == true ? Ok() : BadRequest();
         }
