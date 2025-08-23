@@ -1,12 +1,14 @@
 ﻿@page "/WorkScheduler/SchedulerAnalyzer"
 @using System.Globalization
 @using System.Net.Http.Json
+@using DTOModels
 @using MudBlazor
 @using WorkCalendar.Client.Data.MessageBox
 @using WorkCalendar.Client.Data.Scheduler
 @using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
 @using WorkCalendar.Client.Data.Scheduler.SchedulerUserDefaults
 @using WorkCalendar.Client.Shared.Dialogs
+@using Library.Utils
 @inject IUserActions userActions
 @inject IMessageBoxHandler messageHandler
 @inject IUserLogsActions userLogsActions
@@ -147,17 +149,17 @@
 		</YesButton>
 	</MudMessageBox>
 
-	@code {
+@code {
 	private MudMessageBox mbox { get; set; }
 	private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
 	private DateRange _dateRange;
 	private DateRange dateRange { get { return _dateRange; } set { _dateRange = value; start = (DateTime)_dateRange.Start; end = (DateTime)_dateRange.End; GetUserTasks(); }}
-	private DateTime start = DateTime.Today;
-	private DateTime end = DateTime.Today;
+	private DateTime start = DateTime.Today.SetFirstDayOfMonth();
+	private DateTime end = DateTime.Today.SetLastDayOfMonth();
 	private static IEnumerable<SchedulerTask> Tasks = new List<SchedulerTask>();
 	private double userIncome;
 
-	List<SchedulerPlace> places = new List<SchedulerPlace>();
+	List<SchedulerPlaceDTO> places = new List<SchedulerPlaceDTO>();
 	private string placeFilter = "All";
 	private string typeFilter = "All";
 	private double minLength = 0;
@@ -169,14 +171,14 @@
 
 	private async Task GetUserTasks()
 	{
-		Tasks = await schedulerService.GetUserTasks((DateTime)start, (DateTime)end);
+		Tasks = await schedulerService.GetUserTasks(start, end);
 
 		StateHasChanged();
 	} 
 
 	private async Task GetUserTaskss()
 	{
-		Tasks = await schedulerService.GetUserTasks((DateTime)start, (DateTime)end);
+		Tasks = await schedulerService.GetUserTasks(start, end);
 	} 
 	private double[] PreparePieData()
 	{

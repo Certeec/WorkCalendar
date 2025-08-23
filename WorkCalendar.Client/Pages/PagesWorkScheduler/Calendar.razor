@@ -1,5 +1,6 @@
 ﻿@page "/WorkScheduler/Calendar"
 @using System.Net.Http.Json
+@using DTOModels
 @using Heron.MudCalendar
 @using WorkCalendar.Client.Data.MessageBox
 @using WorkCalendar.Client.Data.Scheduler
@@ -17,10 +18,10 @@
 @inject ISchedulerPlacesService _schedulerPlacesService;
 
 
-<MudCalendar Items="CalendarTasks" onchange="" CellClicked="CellClicked"  DateRangeChanged="DateRangeChanged" DayTimeInterval="CalendarTimeInterval.Minutes15" >
+<MudCalendar T=SchedulerTask Items="CalendarTasks" onchange="" CellClicked="CellClicked" ItemClicked="ItemClicked" DateRangeChanged="DateRangeChanged" DayTimeInterval="CalendarTimeInterval.Minutes15">
 	<CellTemplate>
-		<div style="width: 100%; height: 100%; border: 2px solid @GetColor(ItemColor((SchedulerTask)context))">
-			<div style="background-color: @GetColor(ItemColor((SchedulerTask)context))"><MudText Style="color: #ffffff;" Typo="Typo.body1" Align="Align.Center">@(GetCalendarItemName((SchedulerTask)context))</MudText></div>
+		<div style="width: 100%; height: 100%; border: 2px solid @GetColor(ItemColor(context))">
+			<div style="background-color: @GetColor(ItemColor(context))"><MudText Style="color: #ffffff;" Typo="Typo.body1" Align="Align.Center">@(GetCalendarItemName(context))</MudText></div>
 			</div>
 	</CellTemplate>
 </MudCalendar>
@@ -37,7 +38,7 @@
 @code {
 	private MudMessageBox mbox { get; set; }
 
-	List<SchedulerPlace> places = new List<SchedulerPlace>();
+	List<SchedulerPlaceDTO> places = new List<SchedulerPlaceDTO>();
 	private double userIncome;
 	private string placeFilter = "All";
 	private string typeFilter = "All";
@@ -54,6 +55,12 @@
 	[Inject]
 	private IDialogService DialogService { get; set; }
 
+	private async Task ItemClicked(SchedulerTask item)
+	{
+		await schedulerService.EditTask(item);
+		await Task.CompletedTask;
+	}
+
 	private async Task CellClicked(DateTime dateTime)
 	{
 		var result = await schedulerService.AddTask(dateTime, userIncome);
@@ -61,12 +68,6 @@
 
 		StateHasChanged();
 		//return schedulerService.AddTask(dateTime, userIncome);
-	}
-
-	private async Task ItemClicked(CalendarItem item)
-	{
-		await schedulerService.EditTask((SchedulerTask)item);
-		await Task.CompletedTask;
 	}
 
 	private Color ItemColor(SchedulerTask item)

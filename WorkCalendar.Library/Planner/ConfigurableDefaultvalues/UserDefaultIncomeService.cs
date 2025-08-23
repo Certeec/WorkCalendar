@@ -1,43 +1,39 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DAL;
+using Models.DatabaseModels;
 
 namespace WorkCalendar.Library.Planner.ConfigurableDefaultvalues
 {
     public class UserDefaultIncomeService : IUserDefaultIncomeService
     {
-        private IUserDefaultIncomeRepository _userDefaultIncomeRepository;
+        private DatabaseContext _context;
 
-        public UserDefaultIncomeService(IUserDefaultIncomeRepository userDefaultIncomeRepository) 
+        public UserDefaultIncomeService(DatabaseContext context) 
         {
-            _userDefaultIncomeRepository = userDefaultIncomeRepository;
-        }
-
-        public double GetUserDefaultIncome(int userId)
-        {
-            var returnedValue = _userDefaultIncomeRepository.GetDefaultUserIncome(userId);
-
-            return returnedValue == -1 ? 0 : returnedValue; 
+            _context = context;
         }
 
         public bool SetUserDefaultIncome(int userId, double userIncomePerHour)
         {
-            var userCurrentSetting = _userDefaultIncomeRepository.GetDefaultUserIncome(userId);
+            var userCurrentSetting = GetUserDefaultIncome(userId);
 
-            if(userCurrentSetting == -1)
-            {
-                return _userDefaultIncomeRepository.AddDefaultUserIncome(userId, userIncomePerHour);
-            }
+            if(userCurrentSetting == null)
+                return AddDefaultUserIncome(userId, userIncomePerHour);
             else
             {
-                return _userDefaultIncomeRepository.UpdateDefaultUserIncome(userId,userIncomePerHour);
+                userCurrentSetting.MoneyPerHour = userIncomePerHour;
+                _context.Update(userCurrentSetting);
+                return _context.SaveChanges() == 1;
             }
         }
+
+        private bool AddDefaultUserIncome(int userId, double moneyPerHour)
+        {
+            var userIncome = new UserSchedulerDefaultHourIncome() { MoneyPerHour = moneyPerHour, UserId = userId };
+            _context.DefaultIncomes.Add(userIncome);
+            return _context.SaveChanges() == 1;
+        }
+
+        public UserSchedulerDefaultHourIncome? GetUserDefaultIncome(int userId)
+            => _context.DefaultIncomes.FirstOrDefault(n => n.UserId == userId);
     }
 }

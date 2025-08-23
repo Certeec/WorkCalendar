@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DTOModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Models.DatabaseModels;
 using WorkCalendar.Library.Planner.Places;
 
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WorkCalendar.Api.Controllers
 {
@@ -35,15 +35,21 @@ namespace WorkCalendar.Api.Controllers
 
             if(userLoginId != -1){
 				var result = _userSchedulerPlacesService.GetUserPlaces(userLoginId);
+                List<SchedulerPlaceDTO> schedulerPlaceDTOs = result.Select(place => new SchedulerPlaceDTO
+                {
+                    PlaceId = place.PlaceId,
+                    Name = place.PlaceName,
+                    IsActive = place.IsActive
+                }).ToList();
 
-				return Ok(result);
+				return Ok(schedulerPlaceDTOs);
 			};
 
             return BadRequest();
         }
 
         [HttpPost]
-        public IActionResult AddUserPlace([FromBody]SchedulerPlace place)
+        public IActionResult AddUserPlace([FromBody]SchedulerPlaceDTO placeDTO)
         {
 			int userLoginId = -1;
 
@@ -57,8 +63,15 @@ namespace WorkCalendar.Api.Controllers
 				Console.WriteLine("Found exception" + ex.Message);
 			}
 
-
-			var result = _userSchedulerPlacesService.AddUserPlace(userLoginId, place);
+            SchedulerPlace place = new SchedulerPlace()
+            {
+                UserId = userLoginId,
+                PlaceId = placeDTO.PlaceId,
+                PlaceName = placeDTO.Name,
+                IsActive = placeDTO.IsActive,
+            };
+            
+			var result = _userSchedulerPlacesService.AddUserPlace(place);
 
             return result == true ? Ok(result) : BadRequest();
         }

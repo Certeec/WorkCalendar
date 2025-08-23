@@ -1,4 +1,6 @@
-﻿namespace WorkCalendar.Library.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Models.DatabaseModels
 {
     public class SchedulerTask
     {
@@ -10,7 +12,7 @@
         public double TimeLength { get; set; }
         public string Place { get; set; }
         public string TaskType { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public double MoneyPerHour { get; set; }
         public double Bonus { get; set; }
         public bool IsActive { get; set; }
