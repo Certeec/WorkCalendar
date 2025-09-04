@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Models.Enums;
 
 namespace Models.DatabaseModels
 {
@@ -11,7 +11,7 @@ namespace Models.DatabaseModels
         public DateTime DateEnd { get; set; }
         public double TimeLength { get; set; }
         public string Place { get; set; }
-        public string TaskType { get; set; }
+        public SchedulerTaskState TaskState { get; set; }
         public string? Description { get; set; }
         public double MoneyPerHour { get; set; }
         public double Bonus { get; set; }

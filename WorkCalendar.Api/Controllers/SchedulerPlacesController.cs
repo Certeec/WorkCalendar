@@ -56,7 +56,6 @@ namespace WorkCalendar.Api.Controllers
 			try
 			{
 				userLoginId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-
 			}
 			catch (Exception ex)
 			{

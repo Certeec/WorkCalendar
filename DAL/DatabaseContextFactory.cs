@@ -9,9 +9,8 @@ namespace DAL
     {
         public DatabaseContext CreateDbContext(string[] args)
         {
-            // Wczytaj konfigurację z lokalnego appsettings.json w DAL
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory()) // Katalog DAL
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 

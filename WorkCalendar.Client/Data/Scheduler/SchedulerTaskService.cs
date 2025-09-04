@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace WorkCalendar.Client.Data.Scheduler
             double fromToDouble = from.Date.ToOADate();
             double toToDouble = to.Date.ToOADate();
 
-            var apiString = _serverAdress + "WorkPlanner?from=" + fromToDouble + "&to=" + toToDouble;
+            var apiString = $"{ _serverAdress}WorkPlanner?from={fromToDouble}&to={toToDouble}";
 
 
 			var result = await _client.GetFromJsonAsync<List<SchedulerTask>>(apiString);
@@ -41,7 +42,7 @@ namespace WorkCalendar.Client.Data.Scheduler
 
 			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken.Token);
 
-			var apiString = _serverAdress + "WorkPlanner/TaskById?taskId=" + taskId;
+			var apiString = $"{ _serverAdress}WorkPlanner/TaskById?taskId={taskId}";
 
 
 			var result = await _client.GetFromJsonAsync<SchedulerTask>(apiString);
@@ -55,7 +56,7 @@ namespace WorkCalendar.Client.Data.Scheduler
 			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken.Token);
             HttpResponseMessage response = await _client.PostAsJsonAsync(_serverAdress + "WorkPlanner/Task", task);
 
-            return response.StatusCode.ToString() == "OK" ? true : false;
+			return response.StatusCode.HasFlag(HttpStatusCode.OK);
         }
 
 		public async Task<bool> EditTask(SchedulerTask task)
@@ -65,19 +66,19 @@ namespace WorkCalendar.Client.Data.Scheduler
 			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken.Token);
 			HttpResponseMessage response = await _client.PutAsJsonAsync(_serverAdress + "WorkPlanner", task);
 
-			return response.StatusCode.ToString() == "OK" ? true : false;
-		}
+			return response.StatusCode.HasFlag(HttpStatusCode.OK);
+        }
 
 		public async Task<bool> DeleteTask(int taskId)
         {
 			var userToken = await _localStorageService.GetItemAsync<UserToken>("UserAuthToken");
-            string apiString = _serverAdress + "WorkPlanner?taskId=" + taskId;
+            string apiString = $"{ _serverAdress }WorkPlanner?taskId={taskId}";
 
 			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken.Token);
 			HttpResponseMessage response = await _client.DeleteAsync(apiString);
 
-			return response.StatusCode.ToString() == "OK" ? true : false;
-		}
+			return response.StatusCode.HasFlag(HttpStatusCode.OK);
+        }
 
 		public async Task<List<SchedulerDay>> GetDaysColors(DateTime from, DateTime to)
 		{
@@ -88,10 +89,9 @@ namespace WorkCalendar.Client.Data.Scheduler
 			double fromToDouble = from.Date.ToOADate();
 			double toToDouble = to.Date.ToOADate();
 
-			var apiString = _serverAdress + "SchedulerColor?from=" + fromToDouble + "&to=" + toToDouble;
+			var apiString = $"{_serverAdress}SchedulerColor?from={fromToDouble}&to={toToDouble}";
 
-			var result = await _client.GetFromJsonAsync<List<SchedulerDay>>(apiString);
-			return result;
+			return await _client.GetFromJsonAsync<List<SchedulerDay>>(apiString);
 		}
 	}
 }

@@ -21,16 +21,13 @@ namespace DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
-            
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
 
-            //jeśli nie skonfigurowano opcji, to dodajemy domyślną konfigurację na podstawie connectionString
             if (!optionsBuilder.IsConfigured)
             {
                 if (!string.IsNullOrWhiteSpace(_connectionString))

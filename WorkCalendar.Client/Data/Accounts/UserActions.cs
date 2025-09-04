@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Net;
 using System.Net.Http.Json;
 using WorkCalendar.Client.Data.Accounts.DTO;
 using WorkCalendar.Client.Data.Auth;
@@ -47,7 +48,7 @@ namespace WorkCalendar.Client.Data.Accounts
             {
                 HttpResponseMessage response = await _client.PostAsJsonAsync(_serverAdress + "Login", user);
                 Console.WriteLine("Response message new way is  CODE STATUS " + response.StatusCode);
-                if (response.StatusCode.ToString() == "OK")
+                if (response.StatusCode.HasFlag(HttpStatusCode.OK))
                 {
                     return await response.Content.ReadFromJsonAsync<UserToken>();
                 }
@@ -65,7 +66,7 @@ namespace WorkCalendar.Client.Data.Accounts
         {
             HttpResponseMessage response = await _client.PostAsJsonAsync(_serverAdress + "Login/Account", userCredentials);
 
-            return response.StatusCode.ToString() == "OK" ? true : false;
+            return response.StatusCode.HasFlag(HttpStatusCode.OK);
         }
     }
 }

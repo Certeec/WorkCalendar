@@ -1,4 +1,5 @@
 ﻿using Heron.MudCalendar;
+using Models.Enums;
 
 namespace WorkCalendar.Client.Data.Scheduler
 {
@@ -36,7 +37,7 @@ namespace WorkCalendar.Client.Data.Scheduler
                 Text = Place;
 			}
 		}
-		public string TaskType { get; set; }
+		public SchedulerTaskState TaskState { get; set; }
 		public string Description { get; set; }
 		public double MoneyPerHour { get; set; }
 		public double Bonus { get; set; }

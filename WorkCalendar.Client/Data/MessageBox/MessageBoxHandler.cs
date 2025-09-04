@@ -5,9 +5,7 @@
         private string _value = string.Empty;
         private bool _visible = false;
         public string GetMessage()
-        {
-            return _value;
-        }
+            => _value;
 
         public void SetMessage(string message)
         {
@@ -16,9 +14,7 @@
         }
 
         public bool IsVisible()
-        {
-            return _visible;
-        }
+            => _visible;
 
         public void SetVisible()
         {

@@ -4,8 +4,6 @@ using WorkCalendar.Library.Planner;
 using WorkCalendar.Library.Utils;
 
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace WorkCalendar.Api.Controllers
 {
     [Authorize]

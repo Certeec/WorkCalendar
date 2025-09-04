@@ -6,7 +6,6 @@
 @inject IMessageBoxHandler messageHandler
 @attribute [AllowAnonymous]
 
-
 <EditForm Model="@model" OnValidSubmit="RegisterAccount" >
     <DataAnnotationsValidator />
     <MudGrid  Class="d-flex justify-center">
@@ -17,8 +16,8 @@
                                   @bind-Value="model.Username" For="@(() => model.Username)" />
                     <MudTextField Label="Email" Class="mt-3"
                                   @bind-Value="model.Email" For="@(() => model.Email)" />
-                    <MudTextField Label="Password" Required="true" OnlyValidateIfDirty="true" Validation="@(() => SuperTest())" HelperText="Choose a strong password" Class="mt-3"
-                                  @bind-Value="model.Password" For="@(() => model.Password)" @onchange="SuperTest" InputType="InputType.Password" />
+                    <MudTextField Label="Password" Required="true" OnlyValidateIfDirty="true"  HelperText="Choose a strong password" Class="mt-3"
+                                  @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
                     <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
                                   @bind-Value="model.Password2" For="@(() => model.Password2)" InputType="InputType.Password" />
                 </MudCardContent>
@@ -31,13 +30,13 @@
             <MudPaper Class="pa-4 mud-height-full">
                 <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
                 <MudText Typo="Typo.body2" Color="PasswordLengthIsValid()"> Hasło zawiera przynajmniej 8 znaków </MudText>
-                <MudText Typo="Typo.body2" Color="Color.Error"> Hasło posiada znak specjalny </MudText>
+                <MudText Typo="Typo.body2" Color="PasswordHasSpecialLetter()"> Hasło posiada znak specjalny </MudText>
                 <MudText Typo="Typo.body2" Color="PasswordRepeatTrue()"> Hasła powinny być takie same</MudText>
             </MudPaper>
         </MudItem>
     </MudGrid>
 </EditForm>
-@if (messageHandler.IsVisible() == true)
+@if (messageHandler.IsVisible())
 {
     <MudAlert Severity="Severity.Info" d-flex="align-bottom" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => messageHandler.SetInvisible())"> @messageHandler.GetMessage()  </MudAlert>
 }
@@ -48,12 +47,12 @@
 
     private Color PasswordLengthIsValid()
     {
-        if(model.Password == null)
+        if(string.IsNullOrEmpty(model.Password))
         {
             return Color.Error;
         }
 
-        if(model.Password.Length > 8)
+        if(model.Password.Length >= 8)
         {
             return Color.Success;
 
@@ -62,9 +61,19 @@
         return Color.Error;
     }
 
-    private void SuperTest()
+    private Color PasswordHasSpecialLetter()
     {
-        Console.WriteLine(model.Password);
+        if (string.IsNullOrEmpty(model.Password))
+        {
+            return Color.Error;
+        }
+
+        bool containsSpecialChar = System.Text.RegularExpressions.Regex.IsMatch(
+            model.Password,
+            @"[^a-zA-Z0-9\s]"
+        );
+
+        return containsSpecialChar ? Color.Success : Color.Error;
     }
 
     private Color PasswordRepeatTrue()
@@ -82,15 +91,16 @@
         return Color.Error;
     }
 
-
     private async Task RegisterAccount()
     {
+        UserCredentials userCredentials = new UserCredentials() 
+        {
+            Login = model.Username,
+            Password = model.Password,
+            Email = model.Email 
+        };
 
-        UserCredentials userCredentials = new UserCredentials() { Login = model.Username,
-                Password = model.Password,
-                Email = model.Email };
-
-        if(true != userCredentials.VerifyData())
+        if(!userCredentials.VerifyData())
         {
             messageHandler.SetMessage("Please fill all the forms");
             return;
@@ -98,8 +108,7 @@
 
         var result = await _userActions.CreateAccount(userCredentials);
 
-
-        if(true == result)
+        if(result)
         {
             messageHandler.SetMessage("Account created Succesfully");
             navigationManager.NavigateTo("/login");
@@ -108,6 +117,5 @@
         {
             messageHandler.SetMessage("Wrong Data");
         }
-
     }
 }
