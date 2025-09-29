@@ -46,7 +46,7 @@
             }
         }
 
-        public double bonus
+        public double Bonus
         {
             get
             {

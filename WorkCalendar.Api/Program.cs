@@ -53,7 +53,32 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("BlazorClient", policy =>
     {
-        policy.WithOrigins("https://localhost:7001", "http://localhost:7001")
+        policy.WithOrigins(
+                // Dodaj HTTPS dla localhost:7001
+                "https://localhost:7001",
+                "http://localhost:7001",
+                "https://localhost:7223",
+                "http://localhost:7223",
+                "http://localhost",
+                "https://localhost",
+                "http://localhost:80",
+                "http://localhost:5086",
+                "https://localhost:5086",
+                // Serwer produkcyjny
+                "https://20.84.70.22",
+                "http://20.84.70.22",
+                "http://20.84.70.22:80",
+                "http://20.84.70.22:7001",
+                "http://20.84.70.22:5086",
+                "https://20.84.70.22:5086",
+                // Domena
+                "https://certeec.com",
+                "http://certeec.com",
+                "http://certeec.com:80",
+                "http://certeec.com:7001",
+                "http://certeec.com:5086",
+                "https://certeec.com:5086"
+              )
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

@@ -97,9 +97,12 @@
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
 		<MudTextField @bind-Value="SumData().MoneyEarned" Label="Regular pay" ReadOnly="true" Variant="Variant.Filled" />
+	</MudItem>bonus
+	<MudItem xs="6" lg="2" Elevation="0">
+		<MudTextField @bind-Value="SumData().Bonus" Label="Bonus earned" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudTextField @bind-Value="SumData().bonus" Label="Bonus earned" ReadOnly="true" Variant="Variant.Filled" />
+		<MudTextField @bind-Value="SumData().TotalPay" Label="Total pay" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
 		<MudTextField @bind-Value="SumData().TotalPay" Label="Total pay" ReadOnly="true" Variant="Variant.Filled" />
@@ -231,9 +234,9 @@
 		data.TotalHours = FilteredList().Where(n => n.TaskState == SchedulerTaskState.Planned || n.TaskState == SchedulerTaskState.Done).Sum(n => n.TimeLength);
 		data.ExpectedMoney = FilteredList().Where(n => n.TaskState == SchedulerTaskState.Planned || n.TaskState == SchedulerTaskState.Done).Sum(n => n.MoneyPerHour * n.TimeLength);
 		data.MoneyEarned = FilteredList().Where(n => n.TaskState == SchedulerTaskState.Done).Sum(n => n.MoneyPerHour * n.TimeLength);
-		data.bonus = FilteredList().Where(n => n.TaskState == SchedulerTaskState.Done).Sum(n => n.Bonus);
+		data.Bonus = FilteredList().Where(n => n.TaskState == SchedulerTaskState.Done).Sum(n => n.Bonus);
 		data.Hours = FilteredList().Where(n => n.TaskState == SchedulerTaskState.Done).Sum(n => n.TimeLength);
-		data.TotalPay = data.MoneyEarned + data.bonus;
+		data.TotalPay = data.MoneyEarned + data.Bonus;
 
 		return data;
 	}
