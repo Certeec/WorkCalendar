@@ -19,7 +19,7 @@ namespace WorkCalendar.Client.Data.Accounts
         public UserActions(IHttpClientFactory clientFactory, ILocalStorageService localStorageService, AuthenticationStateProvider authStateProvider, IConfiguration configuration)
         {
             _clientFactory = clientFactory;
-            _client = _clientFactory.CreateClient();
+            _client = _clientFactory.CreateClient("API");
             _localStorageService = localStorageService;
             _authStateProvider = (AuthStateProvider)authStateProvider;
             _client.Timeout = new TimeSpan(0,0,5);

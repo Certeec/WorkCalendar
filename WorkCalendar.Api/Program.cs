@@ -11,6 +11,12 @@ using WorkCalendar.Library.Planner.SchedulerGenerator;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Konfiguracja Windows Service
+builder.Services.AddWindowsService(options =>
+{
+    options.ServiceName = "WorkCalendar API Service";
+});
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -49,44 +55,6 @@ builder.Services.AddAuthentication(opt =>
 builder.Services.AddHealthChecks();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("BlazorClient", policy =>
-    {
-        policy.WithOrigins(
-                // Dodaj HTTPS dla localhost:7001
-                "https://localhost:7001",
-                "http://localhost:7001",
-                "https://localhost:7223",
-                "http://localhost:7223",
-                "http://localhost",
-                "https://localhost",
-                "http://localhost:80",
-                "http://localhost:5086",
-                "https://localhost:5086",
-                // Serwer produkcyjny
-                "https://20.84.70.22",
-                "http://20.84.70.22",
-                "http://20.84.70.22:80",
-                "http://20.84.70.22:7001",
-                "http://20.84.70.22:5086",
-                "https://20.84.70.22:5086",
-                // Domena
-                "https://certeec.com",
-                "http://certeec.com",
-                "http://certeec.com:80",
-                "http://certeec.com:7001",
-                "http://certeec.com:5086",
-                "https://certeec.com:5086"
-              )
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-    });
-});
-
-builder.Services.AddEndpointsApiExplorer();
-
 
 var app = builder.Build();
 
@@ -106,11 +74,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Serwowanie statycznych plikÃ³w Blazor WebAssembly
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("BlazorClient");
 
 app.MapControllers();
+
+// Fallback do index.html dla Blazor routing
+app.MapFallbackToFile("index.html");
 
 app.Run();
 
@@ -125,11 +99,11 @@ static async Task InitializeDatabaseAsync(WebApplication app)
 
         logger.LogInformation("Rozpoczynanie migracji bazy danych...");
         await dbContext.Database.MigrateAsync();
-        logger.LogInformation("Migracje bazy danych zakoñczone pomyœlnie.");
+        logger.LogInformation("Migracje bazy danych zakoÅ„czone pomyÅ›lnie.");
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "B³¹d podczas migracji bazy danych: {Message}", ex.Message);
+        logger.LogError(ex, "BÅ‚Ä…d podczas migracji bazy danych: {Message}", ex.Message);
         throw;
     }
 }

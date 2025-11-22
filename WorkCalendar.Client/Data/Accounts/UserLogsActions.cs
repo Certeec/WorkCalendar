@@ -16,7 +16,7 @@ namespace WorkCalendar.Client.Data.Accounts
         public UserLogsActions(IHttpClientFactory clientFactory, ILocalStorageService localStorageService, IConfiguration configuration)
         {
             _clientFactory = clientFactory;
-            _client = _clientFactory.CreateClient();
+            _client = _clientFactory.CreateClient("API");
             _localStorageService = localStorageService;
             _serverAdress = configuration["ServerAdress"];
         }

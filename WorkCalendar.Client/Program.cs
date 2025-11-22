@@ -18,19 +18,29 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// POPRAWIONY HttpClient - uøywaj konfiguracji z appsettings
-var apiAddress = builder.Configuration["ServerAdress"] ?? builder.HostEnvironment.BaseAddress;
+var serverAddress = builder.Configuration["ServerAdress"] ?? "/api/";
+
+Uri apiAddress;
+if (serverAddress.StartsWith("http://") || serverAddress.StartsWith("https://"))
+{
+    apiAddress = new Uri(serverAddress);
+}
+else
+{
+    var baseUri = new Uri(builder.HostEnvironment.BaseAddress);
+    apiAddress = new Uri(baseUri, serverAddress);
+}
 
 builder.Services.AddHttpClient("API", client =>
 {
-    client.BaseAddress = new Uri(apiAddress);
-    client.Timeout = TimeSpan.FromMinutes(2); // KrÛtszy timeout dla stabilnoúci
+    client.BaseAddress = apiAddress;
+    client.Timeout = TimeSpan.FromMinutes(2); // Kr√≥tszy timeout dla stabilno≈õci
 
-    // Dodaj headers dla lepszej kompatybilnoúci
+    // Dodaj headers dla lepszej kompatybilno≈õci
     client.DefaultRequestHeaders.Add("User-Agent", "BlazorWASM/1.0");
 });
 
-// G≥Ûwny HttpClient
+// G≈Ç√≥wny HttpClient
 builder.Services.AddScoped(sp =>
 {
     var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
@@ -41,12 +51,12 @@ builder.Services.AddScoped(sp =>
 // POPRAWIONE lifetime management
 builder.Services.AddAuthorizationCore();
 
-// Serwisy zwiπzane z uøytkownikami - Scoped (per user session)
+// Serwisy zwiƒÖzane z u≈ºytkownikami - Scoped (per user session)
 builder.Services.AddScoped<IUserActions, UserActions>();
 builder.Services.AddScoped<IUserLogsActions, UserLogsActions>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
-// Serwisy biznesowe - Scoped (wspÛ≥dzielone w ramach requesta/komponentu)
+// Serwisy biznesowe - Scoped (wsp√≥≈Çdzielone w ramach requesta/komponentu)
 builder.Services.AddScoped<ISchedulerTaskService, SchedulerTaskService>();
 builder.Services.AddScoped<ISchedulerPlacesService, SchedulerPlacesService>();
 builder.Services.AddScoped<ISchedulerDefaultHourIncomeService, SchedulerDefaultHourIncomeService>();
@@ -73,7 +83,7 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 
-// Konfiguracja HttpClient timeout jest juø ustawiona wyøej
+// Konfiguracja HttpClient timeout jest ju≈º ustawiona wy≈ºej
 
 var app = builder.Build();
 
@@ -85,7 +95,7 @@ try
 }
 catch (Exception ex)
 {
-    // Log error - moøesz dodaÊ tutaj logging
+    // Log error - mo≈ºesz dodaƒá tutaj logging
     Console.WriteLine($"Application failed to start: {ex.Message}");
     throw;
 }
