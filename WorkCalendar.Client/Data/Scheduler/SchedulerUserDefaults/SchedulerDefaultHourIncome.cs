@@ -26,18 +26,7 @@ namespace WorkCalendar.Client.Data.Scheduler.SchedulerUserDefaults
 
 			var stringResult = await _client.GetStringAsync(_serverAdress + "UserSchedulerDefaultHourIncome");
 
-			double result;
-			if (stringResult.Contains("."))
-			{
-				result = double.Parse(stringResult.Replace('.', ','));
-			}
-			else
-			{
-
-				result = double.Parse(stringResult);
-			}
-
-			return result;
+            return double.Parse(stringResult.Replace(',', '.'));
 		}
 
 		public async Task<bool> SetUserDefaultIncome(double income)

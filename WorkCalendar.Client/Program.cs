@@ -23,6 +23,7 @@ var serverAddress = builder.Configuration["ServerAdress"] ?? "/api/";
 Uri apiAddress;
 if (serverAddress.StartsWith("http://") || serverAddress.StartsWith("https://"))
 {
+    Console.WriteLine(serverAddress + "Found");
     apiAddress = new Uri(serverAddress);
 }
 else
@@ -83,19 +84,14 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 
-// Konfiguracja HttpClient timeout jest już ustawiona wyżej
-
 var app = builder.Build();
 
-
-// Dodaj error handling
 try
 {
     await app.RunAsync();
 }
 catch (Exception ex)
 {
-    // Log error - możesz dodać tutaj logging
     Console.WriteLine($"Application failed to start: {ex.Message}");
     throw;
 }

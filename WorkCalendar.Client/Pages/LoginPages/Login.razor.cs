@@ -19,6 +19,7 @@ namespace WorkCalendar.Client.Pages.LoginPages
                 return;
             }
 
+            Console.WriteLine($"Sending Login Request for {login}");
             var result = await userActions.LoginIn(login, password);
 
             if (result.Token == null)

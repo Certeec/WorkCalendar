@@ -46,6 +46,7 @@ namespace WorkCalendar.Client.Data.Accounts
             var user = new UserToSerialize() { Login = username, Password = password };
             try
             {
+                Console.Write("Sending Packet");
                 HttpResponseMessage response = await _client.PostAsJsonAsync(_serverAdress + "Login", user);
                 Console.WriteLine("Response message new way is  CODE STATUS " + response.StatusCode);
                 if (response.StatusCode.HasFlag(HttpStatusCode.OK))
@@ -56,10 +57,9 @@ namespace WorkCalendar.Client.Data.Accounts
             catch(Exception e)
             {
                 Console.WriteLine(e);
-                return new UserToken();
             }
 
-            return new UserToken();
+             return new UserToken();
 
         }
         public async Task<bool> CreateAccount(UserCredentials userCredentials)

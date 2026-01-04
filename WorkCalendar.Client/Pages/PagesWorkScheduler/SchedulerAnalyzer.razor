@@ -60,11 +60,12 @@
 	</MudItem>
 
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudSelect T="SchedulerTaskState" Label="Type" Variant="Variant.Outlined" Style="width: 50px;" AnchorOrigin="Origin.BottomCenter" @bind-Value="typeFilter">
-			<MudSelectItem Value="SchedulerTaskState.Availabe">Availabe</MudSelectItem>
-			<MudSelectItem Value="SchedulerTaskState.Planned">Planned</MudSelectItem>
-			<MudSelectItem Value="SchedulerTaskState.Done">Done</MudSelectItem>
-			<MudSelectItem Value="SchedulerTaskState.Unavailabe">Unavailabe</MudSelectItem>
+		<MudSelect T="SchedulerTaskStateDTO" Label="Type" Variant="Variant.Outlined" Style="width: 50px;" AnchorOrigin="Origin.BottomCenter" @bind-Value="typeFilter">
+			<MudSelectItem Value="SchedulerTaskStateDTO.All">All</MudSelectItem>
+			<MudSelectItem Value="SchedulerTaskStateDTO.Availabe">Availabe</MudSelectItem>
+			<MudSelectItem Value="SchedulerTaskStateDTO.Planned">Planned</MudSelectItem>
+			<MudSelectItem Value="SchedulerTaskStateDTO.Done">Done</MudSelectItem>
+			<MudSelectItem Value="SchedulerTaskStateDTO.Unavailabe">Unavailabe</MudSelectItem>
 		</MudSelect>
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
@@ -97,7 +98,7 @@
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
 		<MudTextField @bind-Value="SumData().MoneyEarned" Label="Regular pay" ReadOnly="true" Variant="Variant.Filled" />
-	</MudItem>bonus
+	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
 		<MudTextField @bind-Value="SumData().Bonus" Label="Bonus earned" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
@@ -105,7 +106,7 @@
 		<MudTextField @bind-Value="SumData().TotalPay" Label="Total pay" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudTextField @bind-Value="SumData().TotalPay" Label="Total pay" ReadOnly="true" Variant="Variant.Filled" />
+		<MudTextField @bind-Value="SumData().PremiumPoints" Label="Premium points" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 </MudGrid>
 
@@ -164,7 +165,7 @@
 
 	List<SchedulerPlaceDTO> places = new List<SchedulerPlaceDTO>();
 	private string placeFilter = "All";
-	private SchedulerTaskState typeFilter;
+	private SchedulerTaskStateDTO typeFilter = SchedulerTaskStateDTO.All;
 	private double minLength = 0;
 	private double maxLength = 0;
 	private double minBonus = 0;
@@ -183,6 +184,7 @@
 	{
 		Tasks = await schedulerService.GetUserTasks(start, end);
 	} 
+
 	private double[] PreparePieData()
 	{
 		GetUserTaskss();
@@ -210,8 +212,9 @@
 		if (placeFilter != "All")
 			listTofilter = listTofilter.Where(n => n.Place == placeFilter);
 
-		//if (typeFilter != "All") to solve
-		listTofilter = listTofilter.Where(n => n.TaskState == typeFilter);
+		if(typeFilter != SchedulerTaskStateDTO.All)
+			listTofilter = listTofilter.Where(n => n.TaskState == (SchedulerTaskState)((int)typeFilter)
+			);
 
 		if (minLength != 0)
 			listTofilter = listTofilter.Where(n => n.TimeLength >= minLength);
@@ -237,6 +240,7 @@
 		data.Bonus = FilteredList().Where(n => n.TaskState == SchedulerTaskState.Done).Sum(n => n.Bonus);
 		data.Hours = FilteredList().Where(n => n.TaskState == SchedulerTaskState.Done).Sum(n => n.TimeLength);
 		data.TotalPay = data.MoneyEarned + data.Bonus;
+		data.PremiumPoints = FilteredList().Sum(n => n.PremiumPoints);
 
 		return data;
 	}
@@ -249,6 +253,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		_dateRange = new DateRange(start, end);
 		userIncome = await defaultIncomeService.GetUserDefaultIncome();
 		places = await _schedulerPlacesService.GetUserPlaces();
 		GetUserTasks();
