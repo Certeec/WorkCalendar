@@ -85,11 +85,11 @@
         {
             get
             {
-                return _totalPay;
+                return _premiumPoints;
             }
             set
             {
-                _totalPay = Math.Round(value, _rounding);
+                _premiumPoints = Math.Round(value, _rounding);
             }
         }
     }
