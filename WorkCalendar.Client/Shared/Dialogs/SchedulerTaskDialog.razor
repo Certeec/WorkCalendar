@@ -1,6 +1,7 @@
 @using Blazored.LocalStorage
 @using DTOModels
 @using MudBlazor
+@using System.Globalization
 @using WorkCalendar.Client.Data.Scheduler
 @using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
 @using Models.Enums
@@ -21,9 +22,9 @@
             }
         </MudSelect>
         <MudTextField T="string" Label="Description" @bind-Value="task.Description" ></MudTextField>
-        <MudTextField T="double" Label="Money Per Hour"  @bind-Value="task.MoneyPerHour"></MudTextField>
-        <MudTextField T="double" Label="Premium points" @bind-Value="task.PremiumPoints"></MudTextField>
-        <MudTextField T="double" Label="Bonus" @bind-Value="task.Bonus" ReadOnly="task.BonusByRevenue"></MudTextField>
+        <MudTextField T="double" Label="Money Per Hour" @bind-Value="task.MoneyPerHour" Culture="@CultureInfo.InvariantCulture">></MudTextField>
+        <MudTextField T="double" Label="Premium points" @bind-Value="task.PremiumPoints"Culture="@CultureInfo.InvariantCulture"></MudTextField>
+        <MudTextField T="double" Label="Bonus" @bind-Value="task.Bonus" Culture="@CultureInfo.InvariantCulture" ReadOnly="task.BonusByRevenue"></MudTextField>
         <MudSelect T="SchedulerTaskState" Label="Type" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.TaskState">
             <MudSelectItem Value="SchedulerTaskState.Availabe">Availabe</MudSelectItem>
             <MudSelectItem Value="SchedulerTaskState.Planned">Planned</MudSelectItem>
@@ -31,8 +32,8 @@
             <MudSelectItem Value="SchedulerTaskState.Unavailabe">Unavailabe</MudSelectItem>
         </MudSelect>
         <MudCheckBox @bind-Value="task.BonusByRevenue" Label="Bonus by revenue"></MudCheckBox>
-        <MudTextField T="double" Label="Revenue"  @bind-Value="task.Revenue" ></MudTextField>
-        <MudTextField T="double" Label="Revenue Participation" @bind-Value="task.RevenueParticipation" ReadOnly="!task.BonusByRevenue"></MudTextField>
+        <MudTextField T="double" Label="Revenue" Culture="@CultureInfo.InvariantCulture" @bind-Value="task.Revenue"></MudTextField>
+        <MudTextField T="double" Label="Revenue Participation" Culture="@CultureInfo.InvariantCulture" @bind-Value="task.RevenueParticipation" ReadOnly="!task.BonusByRevenue"></MudTextField>
     </DialogContent>
     <DialogActions>
         @if (isEditing)

@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using WorkCalendar.Client.Data.Accounts.DTO;
@@ -26,7 +27,7 @@ namespace WorkCalendar.Client.Data.Scheduler.SchedulerUserDefaults
 
 			var stringResult = await _client.GetStringAsync(_serverAdress + "UserSchedulerDefaultHourIncome");
 
-            return double.Parse(stringResult.Replace(',', '.'));
+            return double.Parse(stringResult, CultureInfo.InvariantCulture);
 		}
 
 		public async Task<bool> SetUserDefaultIncome(double income)

@@ -39,7 +39,7 @@ namespace WorkCalendar.Api.Controllers
 
             var result = _userDefaultIncomeService.SetUserDefaultIncome(userLoginId, defaultHourIncome);
 
-            return result == true ? Ok(result) : BadRequest();
+            return result ? Ok(result) : BadRequest();
         }
     }
 }

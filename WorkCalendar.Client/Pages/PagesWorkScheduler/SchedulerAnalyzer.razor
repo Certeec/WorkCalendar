@@ -37,7 +37,11 @@
 					Show places
 				</MudButton>
 				<MudStack Row>
-					<MudTextField @bind-Value="userIncome" Label="Default income per hour" Variant="Variant.Outlined"></MudTextField>
+					<MudTextField T="double"
+								  @bind-Value="userIncome"
+								  Label="Default income per hour"
+								  Variant="Variant.Outlined"
+								  Culture="@CultureInfo.InvariantCulture"></MudTextField>
 
 					<MudButton @onclick="SetDefaultIncome" Variant="Variant.Filled" Color="Color.Primary">
 						Set
@@ -88,22 +92,22 @@
 
 <MudGrid Spacing="0">
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudTextField @bind-Value="SumData().TotalHours" Label="Total planned hours" ReadOnly="true" Variant="Variant.Filled" />
+		<MudTextField @bind-Value="SumData().TotalHours" Label="Total planned hours" Culture="@CultureInfo.InvariantCulture" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudTextField @bind-Value="SumData().ExpectedMoney" Label="Possible pay" ReadOnly="true" Variant="Variant.Filled" />
+		<MudTextField @bind-Value="SumData().ExpectedMoney" Label="Possible pay" Culture="@CultureInfo.InvariantCulture"  ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudTextField @bind-Value="SumData().Hours" Label="Hours worked" ReadOnly="true" Variant="Variant.Filled" />
+		<MudTextField @bind-Value="SumData().Hours" Label="Hours worked" Culture="@CultureInfo.InvariantCulture" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudTextField @bind-Value="SumData().MoneyEarned" Label="Regular pay" ReadOnly="true" Variant="Variant.Filled" />
+		<MudTextField @bind-Value="SumData().MoneyEarned" Label="Regular pay" Culture="@CultureInfo.InvariantCulture" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudTextField @bind-Value="SumData().Bonus" Label="Bonus earned" ReadOnly="true" Variant="Variant.Filled" />
+		<MudTextField @bind-Value="SumData().Bonus" Label="Bonus earned" Culture="@CultureInfo.InvariantCulture" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
-		<MudTextField @bind-Value="SumData().TotalPay" Label="Total pay" ReadOnly="true" Variant="Variant.Filled" />
+		<MudTextField @bind-Value="SumData().TotalPay" Label="Total pay" Culture="@CultureInfo.InvariantCulture" ReadOnly="true" Variant="Variant.Filled" />
 	</MudItem>
 	<MudItem xs="6" lg="2" Elevation="0">
 		<MudTextField @bind-Value="SumData().PremiumPoints" Label="Premium points" ReadOnly="true" Variant="Variant.Filled" />

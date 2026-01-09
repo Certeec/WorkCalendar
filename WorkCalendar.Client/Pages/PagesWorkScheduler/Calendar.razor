@@ -21,9 +21,9 @@
 
 <MudCalendar T=SchedulerTask Items="CalendarTasks" onchange="" CellClicked="CellClicked" ItemClicked="ItemClicked" DateRangeChanged="DateRangeChanged" DayTimeInterval="CalendarTimeInterval.Minutes15">
 	<CellTemplate>
-		<div style="width: 100%; height: 100%; border: 2px solid @GetColor(ItemColor(context))">
-			<div style="background-color: @GetColor(ItemColor(context))"><MudText Style="color: #ffffff;" Typo="Typo.body1" Align="Align.Center">@(GetCalendarItemName(context))</MudText></div>
-			</div>
+		<div style="width: 100%; height: 100%; background-color: @GetColor(ItemColor(context)); border: 2px solid darken(@GetColor(ItemColor(context)), 10%); border-radius: 4px; padding: 4px; box-sizing: border-box;">
+			<MudText Style="color: #ffffff; font-weight: 500;" Typo="Typo.body2" Align="Align.Center">@(GetCalendarItemName(context))</MudText>
+		</div>
 	</CellTemplate>
 </MudCalendar>
 
@@ -59,7 +59,7 @@
 	private async Task CellClicked(DateTime dateTime)
 	{
 		var result = await schedulerService.AddTask(dateTime, userIncome);
-		CalendarTasks = await schedulerService.GetUserTasks((DateTime)_currentDateRange.Start, (DateTime)_currentDateRange.End);
+		CalendarTasks = await GetAndFixInvalidTasks((DateTime)_currentDateRange.Start, (DateTime)_currentDateRange.End);
 
 		StateHasChanged();
 	}
@@ -83,7 +83,7 @@
 
 	private async void DateRangeChanged(DateRange dateRange)
 	{
-		CalendarTasks = await schedulerService.GetUserTasks((DateTime)dateRange.Start, (DateTime)dateRange.End);
+		CalendarTasks = await GetAndFixInvalidTasks((DateTime)dateRange.Start, (DateTime)dateRange.End);
 		_currentDateRange = dateRange;
 		StateHasChanged();
 	}
@@ -102,4 +102,28 @@
 
 	private string GetCalendarItemName(SchedulerTask task)
 	=> $"{task.Place} {task.DateStart.Hour}-{task.DateEnd.Hour}";
+
+	private async Task<List<SchedulerTask>> GetAndFixInvalidTasks(DateTime start, DateTime end)
+	{
+		try
+		{
+			var allTasks = await schedulerService.GetUserTasks(start, end);
+
+			foreach (var task in allTasks)
+			{
+				if (task.DateEnd <= task.DateStart)
+				{
+					task.DateEnd = task.DateStart.Date.AddDays(1).AddSeconds(-1);
+				}
+			}
+			return allTasks;
+		}
+
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Błąd podczas pobierania zadań: {ex.Message}");
+			snackbar.Add($"Błąd podczas ładowania zadań: {ex.Message}", Severity.Error);
+			return new List<SchedulerTask>();
+		}
+	}
 }
