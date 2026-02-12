@@ -47,9 +47,24 @@ namespace MedicalCompanyManagement.API.Controllers
         {
             var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
 
-
             var task = _workPlannerService.GetUserTaskById(userLoginId, taskId);
 
+            return Ok(task);
+        }
+
+        [HttpGet("TasksByDates")]
+        public IActionResult GetTasksByDates([FromQuery] string dates)
+        {
+            var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
+
+            var datesList = dates.Split(',')
+                .Select(d => DateTime.Parse(d))
+                .ToList();
+
+            if (datesList.Count == 0)
+                return NotFound();
+
+            var task = _workPlannerService.GetUserTasksByDates(userLoginId, datesList);
             return Ok(task);
         }
 
@@ -64,7 +79,7 @@ namespace MedicalCompanyManagement.API.Controllers
 
             var result = _workPlannerService.AddTask(task);
 
-            return result == true ? Ok() : BadRequest();
+            return result ? Ok() : BadRequest();
         }
 
         [HttpPut]
@@ -76,7 +91,7 @@ namespace MedicalCompanyManagement.API.Controllers
 
             var result = _workPlannerService.UpdateTask(task);
 
-            return result == true ? Ok() : BadRequest();
+            return result ? Ok() : BadRequest();
         }
 
         [HttpDelete]
@@ -86,7 +101,7 @@ namespace MedicalCompanyManagement.API.Controllers
 
             var result = _workPlannerService.DeleteTask(userLoginId, taskId);
 
-            return result == true ? Ok() : BadRequest();
+            return result ? Ok() : BadRequest();
         }
     }
 }

@@ -1,0 +1,184 @@
+@using Blazored.LocalStorage
+@using DTOModels
+@using Radzen.Blazor
+@using WorkCalendar.Client.Data.Scheduler
+@using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
+@inject ILocalStorageService _localStorageService;
+@inject ISchedulerTaskService _schedulerService;
+@inject IDialogService _dialogService;
+@inject IJSRuntime JS
+
+<MudDialog>
+    <DialogContent>
+        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="Radzen.AlignItems.Center" Gap="0.5rem" class="rz-p-12">
+    <RadzenLabel Text="Select Dates" Component="DatePickerMultiple" />
+            <RadzenDatePicker Multiple
+                              Value="@PickedDates"
+                              ValueChanged="@(async (IEnumerable<DateTime> value) => await OnPickedDatesChanged(value))"
+                              DateFormat="dd/MM/yyyy"
+                              Name="DatePickerMultiple" />
+    </RadzenStack>
+        <MudCheckBox @bind-Value="_showType" @bind-Value:after="GetTextFromTasks" Label="Show Type"></MudCheckBox>
+        <MudCheckBox @bind-Value="_showHours" @bind-Value:after="GetTextFromTasks" Label="Show Hours"></MudCheckBox>
+        <MudCheckBox @bind-Value="_showIncome" @bind-Value:after="GetTextFromTasks" Label="Show Income"></MudCheckBox>
+        <MudCheckBox @bind-Value="_showPremiumPoints"@bind-Value:after="GetTextFromTasks" Label="Show Premium Points"></MudCheckBox>
+        <MudCheckBox @bind-Value="_showPlace" @bind-Value:after="GetTextFromTasks" Label="Show Places"></MudCheckBox>
+        <MudCheckBox @bind-Value="_showBonus" @bind-Value:after="GetTextFromTasks" Label="Show Bonus"></MudCheckBox>
+        <MudTextField @bind-Value="_generatedText"
+                      Label="Generated Text"
+                      Variant="Variant.Outlined"
+                      Lines="10"></MudTextField>
+        <MudButton OnClick="CopyToClipboard"
+                   StartIcon="@Icons.Material.Filled.ContentCopy"
+                   Color="Color.Secondary"
+                   Variant="Variant.Filled"
+                   Disabled="@string.IsNullOrWhiteSpace(_generatedText)">
+            Copy to Clipboard
+        </MudButton>
+        @if (_showCopySuccess)
+        {
+            <MudText Color="Color.Success" Typo="Typo.body2">Copied to clipboard!</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="AddNew">Add new</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    private List<string> _events = new();
+
+    private bool _showType;
+    private bool _showHours;
+    private bool _showIncome;
+    private bool _showPremiumPoints;
+    private bool _showPlace;
+    private bool _showBonus;
+    private string _generatedText = string.Empty;
+    private bool _showCopySuccess = false;
+    IEnumerable<DateTime> PickedDates { get; set; }
+
+    private async Task OnPickedDatesChanged(IEnumerable<DateTime> value)
+    {
+        PickedDates = value;
+
+        if (PickedDates != null && PickedDates.Any())
+        {
+            await GetUserTasksByDates();
+        }
+        else
+        {
+            _generatedText = string.Empty;
+        }
+    }
+    List<SchedulerTask> Tasks;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    private async Task CopyToClipboard()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", _generatedText);
+            _showCopySuccess = true;
+            StateHasChanged();
+
+            await Task.Delay(3000);
+            _showCopySuccess = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to copy: {ex.Message}");
+   
+        }
+    }
+
+    private void GetTextFromTasks()
+    {
+        _generatedText = string.Empty;
+
+        if (Tasks == null || !Tasks.Any())
+        {
+            _generatedText = "No tasks found for selected dates.";
+            return;
+        }
+
+        var lines = new List<string>();
+
+        foreach (var task in Tasks)
+        {
+            var parts = new List<string>();
+
+            parts.Add($"Date: {task.DateEnd:dd/MM/yyyy}");
+
+            if (_showType)
+                parts.Add($"Type: {task.TaskState}");
+
+            if (_showHours)
+            {
+                parts.Add($"Hours: {task.DateStart.Hour:D2}:00 - {task.DateEnd.Hour:D2}:00");
+            }
+
+            if (_showIncome)
+            {
+                var income = task.MoneyPerHour * task.TimeLength;
+                parts.Add($"Income: {income:C}");
+            }
+
+            if (_showPremiumPoints)
+            {
+                parts.Add($"Premium: {task.PremiumPoints} pts");
+            }
+
+            if (_showPlace)
+            {
+                parts.Add($"Place: {task.Place}");
+            }
+
+            if(_showBonus)
+            {
+                parts.Add($"Bonus: {task.Bonus}");
+            }
+
+            lines.Add(string.Join(" | ", parts));
+        }
+
+        _generatedText = string.Join("\n", lines);
+
+        StateHasChanged();
+    }
+
+    private async Task GetUserTasksByDates()
+    {
+        if (PickedDates != null)
+        {
+            Tasks = await _schedulerService.GetUserTasksByDates(PickedDates);
+
+            if(Tasks != null)
+            GetTextFromTasks();
+        }
+    }
+
+    private async Task AddNew()
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
+        var result = _dialogService.Show<NewSchedulerPlacesDialog>("Add new", closeOnEscapeKey);
+        var place = await result.GetReturnValueAsync<SchedulerPlaceDTO>();
+
+        StateHasChanged();
+    }
+
+    private void Submit()
+    {
+        MudDialog.Close();
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

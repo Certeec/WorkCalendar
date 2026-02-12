@@ -36,7 +36,18 @@ namespace WorkCalendar.Client.Data.Scheduler
             return result;
         }
 
-		public async Task<SchedulerTask> GetUserTask(int taskId)
+        public async Task<List<SchedulerTask>> GetUserTasksByDates(IEnumerable<DateTime> dates)
+        {
+            var userToken = await _localStorageService.GetItemAsync<UserToken>("UserAuthToken");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken.Token);
+
+            var datesString = string.Join(",", dates.Select(d => d.ToString("yyyy-MM-dd")));
+            var apiString = $"{_serverAdress}WorkPlanner/TasksByDates?dates={datesString}";
+
+            return await _client.GetFromJsonAsync<List<SchedulerTask>>(apiString);
+        }
+
+        public async Task<SchedulerTask> GetUserTask(int taskId)
 		{
 			var userToken = await _localStorageService.GetItemAsync<UserToken>("UserAuthToken");
 

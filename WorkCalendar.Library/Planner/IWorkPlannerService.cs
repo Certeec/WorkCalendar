@@ -10,5 +10,6 @@ namespace WorkCalendar.Library.Planner
         public List<SchedulerTask> GetUserTasksByDate(int userId, DateTime from, DateTime to);
         public SchedulerTask GetUserTaskById(int userId, int taskId);
         bool DeleteTask(int userId, int taskId);
-	}
+        List<SchedulerTask> GetUserTasksByDates(int userId, IEnumerable<DateTime> dates);
+    }
 }

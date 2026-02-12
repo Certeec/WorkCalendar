@@ -36,6 +36,9 @@
 				<MudButton @onclick="ShowPlaces" Variant="Variant.Filled" Color="Color.Primary">
 					Show places
 				</MudButton>
+				<MudButton @onclick="ShowPrintedTasks" Variant="Variant.Filled" Color="Color.Primary">
+					Get Tasks to text
+				</MudButton>
 				<MudStack Row>
 					<MudTextField T="double"
 								  @bind-Value="userIncome"
@@ -267,6 +270,12 @@
 	{
 		DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
 		var result = dialogService.Show<SchedulerPlacesDialog>("Places", closeOnEscapeKey);
+	}
+
+	private void ShowPrintedTasks()
+	{
+		DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true };
+		var result = dialogService.Show<SchedulerPrintDialog>("Print tasks", closeOnEscapeKey);
 	}
 
 	private void ShowSummary()

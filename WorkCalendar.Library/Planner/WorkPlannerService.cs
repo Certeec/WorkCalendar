@@ -1,5 +1,6 @@
 ﻿using DAL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Models.DatabaseModels;
 
 namespace WorkCalendar.Library.Planner
@@ -45,6 +46,25 @@ namespace WorkCalendar.Library.Planner
             var task = GetUserTaskById(userId, taskId);
             _context.schedulerTasks.Remove(task);
             return _context.SaveChanges() == 1;
+        }
+
+        public List<SchedulerTask> GetUserTasksByDates(int userId, IEnumerable<DateTime> dates)
+        {
+                var datesList = dates.Select(d => d.Date).Distinct().ToList();
+
+            if (!datesList.Any())
+                return new List<SchedulerTask>();
+
+            var minDate = datesList.Min();
+            var maxDate = datesList.Max();
+
+            return _context.schedulerTasks
+                .Where(n => n.UserId == userId &&
+                            n.DateStart.Date <= maxDate &&
+                            n.DateEnd.Date >= minDate)
+                .AsEnumerable()
+                .Where(n => datesList.Any(date => date >= n.DateStart.Date && date <= n.DateEnd.Date))
+                .ToList();
         }
     }
 }

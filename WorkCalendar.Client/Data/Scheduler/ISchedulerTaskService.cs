@@ -10,5 +10,6 @@ namespace WorkCalendar.Client.Data.Scheduler
         Task<bool> EditTask(SchedulerTask task);
         Task<bool> DeleteTask(int taskId);
 		Task<List<SchedulerDay>> GetDaysColors(DateTime from, DateTime to);
-	}
+        Task<List<SchedulerTask>> GetUserTasksByDates(IEnumerable<DateTime> dates);
+    }
 }
