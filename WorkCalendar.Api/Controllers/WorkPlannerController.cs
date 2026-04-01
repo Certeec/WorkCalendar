@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Models.DatabaseModels;
 using WorkCalendar.Library.Planner;
 using WorkCalendar.Library.Utils;
-
+using System.Security.Claims;
+using MedicalCompanyManagement.API.Extensions; // Dodane dla ClaimTypes i metod rozszerzających
 
 namespace MedicalCompanyManagement.API.Controllers
 {
@@ -12,22 +13,23 @@ namespace MedicalCompanyManagement.API.Controllers
     [ApiController]
     public class WorkPlannerController : ControllerBase
     {
-        private IWorkPlannerService _workPlannerService;
+        private readonly IWorkPlannerService _workPlannerService;
 
         public WorkPlannerController(IWorkPlannerService workPlannerService)
         {
             _workPlannerService = workPlannerService;
         }
 
+        private int CurrentUserId
+            => User.GetUserId();
+
         [HttpGet]
         public IActionResult GetAllTasks(double from, double to)
         {
-            var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-
             DateTime dateFrom = DateTime.FromOADate(from);
             DateTime dateTo = DateTime.FromOADate(to).SetEndOfDay();
 
-            var list = _workPlannerService.GetUserTasksByDate(userLoginId, dateFrom, dateTo);
+            var list = _workPlannerService.GetUserTasksByDate(CurrentUserId, dateFrom, dateTo);
 
             return Ok(list);
         }
@@ -35,28 +37,20 @@ namespace MedicalCompanyManagement.API.Controllers
         [HttpGet("Task")]
         public IActionResult GetAllTasks()
         {
-            var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-
-            var list = _workPlannerService.GetAllSchedulerTasks(userLoginId);
-
+            var list = _workPlannerService.GetAllSchedulerTasks(CurrentUserId);
             return Ok(list);
         }
 
         [HttpGet("TaskById")]
         public IActionResult GetTaskById(int taskId)
         {
-            var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-
-            var task = _workPlannerService.GetUserTaskById(userLoginId, taskId);
-
+            var task = _workPlannerService.GetUserTaskById(CurrentUserId, taskId);
             return Ok(task);
         }
 
         [HttpGet("TasksByDates")]
         public IActionResult GetTasksByDates([FromQuery] string dates)
         {
-            var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-
             var datesList = dates.Split(',')
                 .Select(d => DateTime.Parse(d))
                 .ToList();
@@ -64,18 +58,14 @@ namespace MedicalCompanyManagement.API.Controllers
             if (datesList.Count == 0)
                 return NotFound();
 
-            var task = _workPlannerService.GetUserTasksByDates(userLoginId, datesList);
+            var task = _workPlannerService.GetUserTasksByDates(CurrentUserId, datesList);
             return Ok(task);
         }
-
 
         [HttpPost("Task")]
         public IActionResult AddTask([FromBody] SchedulerTask task)
         {
-
-            var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-
-            task.UserId = userLoginId;
+            task.UserId = CurrentUserId;
 
             var result = _workPlannerService.AddTask(task);
 
@@ -85,9 +75,7 @@ namespace MedicalCompanyManagement.API.Controllers
         [HttpPut]
         public IActionResult EditTask([FromBody] SchedulerTask task)
         {
-            var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-
-            task.UserId = userLoginId;
+            task.UserId = CurrentUserId;
 
             var result = _workPlannerService.UpdateTask(task);
 
@@ -97,9 +85,7 @@ namespace MedicalCompanyManagement.API.Controllers
         [HttpDelete]
         public IActionResult DeleteTask(int taskId)
         {
-            var userLoginId = Int32.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-
-            var result = _workPlannerService.DeleteTask(userLoginId, taskId);
+            var result = _workPlannerService.DeleteTask(CurrentUserId, taskId);
 
             return result ? Ok() : BadRequest();
         }

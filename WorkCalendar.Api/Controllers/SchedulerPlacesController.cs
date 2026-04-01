@@ -1,4 +1,5 @@
 ﻿using DTOModels;
+using MedicalCompanyManagement.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.DatabaseModels;
@@ -25,9 +26,9 @@ namespace WorkCalendar.Api.Controllers
 
 			try
             {
-				userLoginId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
+				userLoginId = User.GetUserId();
 
-			}
+            }
 			catch (Exception ex)
             {
                 Console.WriteLine("Found exception" + ex.Message);
@@ -55,8 +56,8 @@ namespace WorkCalendar.Api.Controllers
 
 			try
 			{
-				userLoginId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
-			}
+				userLoginId = User.GetUserId();
+            }
 			catch (Exception ex)
 			{
 				Console.WriteLine("Found exception" + ex.Message);
@@ -72,7 +73,7 @@ namespace WorkCalendar.Api.Controllers
             
 			var result = _userSchedulerPlacesService.AddUserPlace(place);
 
-            return result == true ? Ok(result) : BadRequest();
+            return result ? Ok(result) : BadRequest();
         }
     }
 }

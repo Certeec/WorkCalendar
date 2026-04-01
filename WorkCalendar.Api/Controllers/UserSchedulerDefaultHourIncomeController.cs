@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MedicalCompanyManagement.API.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WorkCalendar.Library.Planner.ConfigurableDefaultvalues;
 
@@ -13,7 +14,7 @@ namespace WorkCalendar.Api.Controllers
     public class UserSchedulerDefaultHourIncomeController : ControllerBase
     {
         IUserDefaultIncomeService _userDefaultIncomeService;
-        private static readonly double _defaultValue = 0;
+        private const double _defaultValue = 0;
         public UserSchedulerDefaultHourIncomeController(IUserDefaultIncomeService userDefaultIncomeService)
         {
             _userDefaultIncomeService = userDefaultIncomeService;
@@ -22,7 +23,7 @@ namespace WorkCalendar.Api.Controllers
         [HttpGet]
         public IActionResult GetUserDefaultHourIncome()
         {
-            var userLoginId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
+            var userLoginId = User.GetUserId();
 
             var result = _userDefaultIncomeService.GetUserDefaultIncome(userLoginId);
 
@@ -35,7 +36,7 @@ namespace WorkCalendar.Api.Controllers
         [HttpPut]
         public IActionResult SetUserDefaultHourIncome([FromBody]double defaultHourIncome)
         {
-            var userLoginId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
+            var userLoginId = User.GetUserId();
 
             var result = _userDefaultIncomeService.SetUserDefaultIncome(userLoginId, defaultHourIncome);
 

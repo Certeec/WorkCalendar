@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MedicalCompanyManagement.API.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WorkCalendar.Library.Planner.SchedulerGenerator;
 
@@ -20,7 +21,7 @@ namespace WorkCalendar.Api.Controllers
 		[HttpGet]
 		public IActionResult GetAllTasks(string urlKey)
 		{
-			var userLoginId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
+			var userLoginId = User.GetUserId();
 
 			var list = _schedulerGeneratorService.GetPublishedScheduler(urlKey);
 
