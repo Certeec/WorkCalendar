@@ -7,3 +7,4 @@ namespace WorkCalendar.Library
         public static int MaxDaysAhead = 30;
     }
 }
+// Placeholder for future enhancements
