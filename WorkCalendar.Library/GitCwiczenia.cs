@@ -12,6 +12,7 @@ namespace WorkCalendar.Library
         public static string FormatDateRange(DateTime start, DateTime end)
         {
             return $"{start:dd.MM.yyyy} - {end:dd.MM.yyyy}";
+            //zmian do przeneiseinia
         }
     }
 }
