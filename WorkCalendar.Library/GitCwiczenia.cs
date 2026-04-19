@@ -9,21 +9,21 @@ namespace WorkCalendar.Library
         /// <summary>
         /// Counts working days (Mon-Fri) between two dates, excluding start date.
         /// </summary>
-        public static int GetWorkingDaysCount(DateTime start, DateTime end)
+        public static int GetWorkingDaysCount(DateTime startDate, DateTime endDate)
         {
-            int count = 0;
-            DateTime current = start.AddDays(1);
+            int workingDaysCount = 0;
+            DateTime currentDate = startDate.AddDays(1);
 
-            while (current <= end)
+            while (currentDate <= endDate)
             {
-                if (current.DayOfWeek != DayOfWeek.Saturday && current.DayOfWeek != DayOfWeek.Sunday)
+                if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
                 {
-                    count++;
+                    workingDaysCount++;
                 }
-                current = current.AddDays(1);
+                currentDate = currentDate.AddDays(1);
             }
 
-            return count;
+            return workingDaysCount;
         }
 
         // WIP: New reporting feature coming
