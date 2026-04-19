@@ -6,56 +6,96 @@
 @inject IMessageBoxHandler messageHandler
 @attribute [AllowAnonymous]
 
-<EditForm Model="@model" OnValidSubmit="RegisterAccount" >
-    <DataAnnotationsValidator />
-    <MudGrid  Class="d-flex justify-center">
-        <MudItem xs="12" sm="4">
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField Label="First name" HelperText="Max. 8 characters"
-                                  @bind-Value="model.Username" For="@(() => model.Username)" />
-                    <MudTextField Label="Email" Class="mt-3"
-                                  @bind-Value="model.Email" For="@(() => model.Email)" />
-                    <MudTextField Label="Password" Required="true" OnlyValidateIfDirty="true"  HelperText="Choose a strong password" Class="mt-3"
-                                  @bind-Value="model.Password" For="@(() => model.Password)" InputType="InputType.Password" />
-                    <MudTextField Label="Password" HelperText="Repeat the password" Class="mt-3"
-                                  @bind-Value="model.Password2" For="@(() => model.Password2)" InputType="InputType.Password" />
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="12" sm="2">
-            <MudPaper Class="pa-4 mud-height-full">
-                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
-                <MudText Typo="Typo.body2" Color="PasswordLengthIsValid()"> Hasło zawiera przynajmniej 8 znaków </MudText>
-                <MudText Typo="Typo.body2" Color="PasswordHasSpecialLetter()"> Hasło posiada znak specjalny </MudText>
-                <MudText Typo="Typo.body2" Color="PasswordRepeatTrue()"> Hasła powinny być takie same</MudText>
-            </MudPaper>
-        </MudItem>
-    </MudGrid>
-</EditForm>
-@if (messageHandler.IsVisible())
-{
-    <MudAlert Severity="Severity.Info" d-flex="align-bottom" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => messageHandler.SetInvisible())"> @messageHandler.GetMessage()  </MudAlert>
-}
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center justify-center mud-width-full" Style="min-height: 85vh;">
+    <MudCard Elevation="4" Class="pa-6 rounded-lg w-100 mt-8 mb-8">
+        <MudCardHeader Class="pb-0">
+            <CardHeaderContent>
+                <MudText Typo="Typo.h4" Align="Align.Center" Color="Color.Primary" Class="font-weight-bold mb-2">Create Account</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">Fill in the details below to join us.</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
 
-@code{
+        <EditForm Model="@model" OnValidSubmit="RegisterAccount">
+            <DataAnnotationsValidator />
+
+            <MudCardContent>
+                <MudTextField @bind-Value="model.Username" For="@(() => model.Username)"
+                              Label="Username" HelperText="Max. 8 characters"
+                              Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Rounded.Person" />
+
+                <MudTextField @bind-Value="model.Email" For="@(() => model.Email)"
+                              Label="Email"
+                              Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Rounded.Email" />
+
+                <MudTextField @bind-Value="model.Password" For="@(() => model.Password)"
+                              Label="Password" Required="true" OnlyValidateIfDirty="true"
+                              InputType="InputType.Password"
+                              Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Rounded.Lock" />
+
+                <MudTextField @bind-Value="model.Password2" For="@(() => model.Password2)"
+                              Label="Repeat Password"
+                              InputType="InputType.Password"
+                              Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Rounded.LockClock" />
+
+                <MudPaper Elevation="0" Class="pa-4 mt-2 mb-4" Style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                    <MudText Typo="Typo.subtitle2" Class="mb-2 font-weight-bold" Color="Color.Primary">Password Requirements</MudText>
+
+                    <div class="d-flex align-center mb-1">
+                        <MudIcon Size="Size.Small" Class="mr-2"
+                                 Icon="@(PasswordLengthIsValid() == Color.Success ? Icons.Material.Rounded.CheckCircle : Icons.Material.Rounded.Cancel)"
+                                 Color="@PasswordLengthIsValid()" />
+                        <MudText Typo="Typo.body2" Color="@PasswordLengthIsValid()">At least 8 characters long</MudText>
+                    </div>
+
+                    <div class="d-flex align-center mb-1">
+                        <MudIcon Size="Size.Small" Class="mr-2"
+                                 Icon="@(PasswordHasSpecialLetter() == Color.Success ? Icons.Material.Rounded.CheckCircle : Icons.Material.Rounded.Cancel)"
+                                 Color="@PasswordHasSpecialLetter()" />
+                        <MudText Typo="Typo.body2" Color="@PasswordHasSpecialLetter()">Contains a special character</MudText>
+                    </div>
+
+                    <div class="d-flex align-center">
+                        <MudIcon Size="Size.Small" Class="mr-2"
+                                 Icon="@(PasswordRepeatTrue() == Color.Success ? Icons.Material.Rounded.CheckCircle : Icons.Material.Rounded.Cancel)"
+                                 Color="@PasswordRepeatTrue()" />
+                        <MudText Typo="Typo.body2" Color="@PasswordRepeatTrue()">Passwords match</MudText>
+                    </div>
+                </MudPaper>
+
+                @if (messageHandler.IsVisible())
+                {
+                    <MudAlert Severity="Severity.Error" Class="mb-2" ShowCloseIcon="true" CloseIconClicked="(() => messageHandler.SetInvisible())">
+                        @messageHandler.GetMessage()
+                    </MudAlert>
+                }
+            </MudCardContent>
+
+            <MudCardActions Class="d-flex justify-center pb-4 px-4">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true" Class="rounded-pill">
+                    Register
+                </MudButton>
+            </MudCardActions>
+        </EditForm>
+    </MudCard>
+</MudContainer>
+
+@code {
     private RegisterAccountForm model = new RegisterAccountForm();
-    private Color _passwordLengthColor = Color.Error;
 
     private Color PasswordLengthIsValid()
     {
-        if(string.IsNullOrEmpty(model.Password))
+        if (string.IsNullOrEmpty(model.Password))
         {
             return Color.Error;
         }
 
-        if(model.Password.Length >= 8)
+        if (model.Password.Length >= 8)
         {
             return Color.Success;
-
         }
 
         return Color.Error;
@@ -78,12 +118,12 @@
 
     private Color PasswordRepeatTrue()
     {
-        if (model.Password == null || model.Password2 == null)
+        if (string.IsNullOrEmpty(model.Password) || string.IsNullOrEmpty(model.Password2))
         {
             return Color.Error;
         }
 
-        if(model.Password == model.Password2)
+        if (model.Password == model.Password2)
         {
             return Color.Success;
         }
@@ -93,29 +133,29 @@
 
     private async Task RegisterAccount()
     {
-        UserCredentials userCredentials = new UserCredentials() 
+        UserCredentials userCredentials = new UserCredentials()
         {
             Login = model.Username,
             Password = model.Password,
-            Email = model.Email 
+            Email = model.Email
         };
 
-        if(!userCredentials.VerifyData())
+        if (!userCredentials.VerifyData())
         {
-            messageHandler.SetMessage("Please fill all the forms");
+            messageHandler.SetMessage("Please fill in all the fields correctly.");
             return;
         }
 
         var result = await _userActions.CreateAccount(userCredentials);
 
-        if(result)
+        if (result)
         {
-            messageHandler.SetMessage("Account created Succesfully");
+            messageHandler.SetMessage("Account created successfully!");
             navigationManager.NavigateTo("/login");
         }
         else
         {
-            messageHandler.SetMessage("Wrong Data");
+            messageHandler.SetMessage("Invalid data provided or user already exists.");
         }
     }
 }

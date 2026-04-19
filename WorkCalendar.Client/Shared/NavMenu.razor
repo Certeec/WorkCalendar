@@ -1,45 +1,47 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 
+<MudNavMenu Rounded="true" Margin="Margin.Normal" Color="Color.Primary">
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Dashboard" IconColor="Color.Info">
+        Dashboard
+    </MudNavLink>
 
-<div class="@NavMenuCssClass" >
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-           <AuthorizeView>
-            <Authorized>
-        <MudNavGroup Title="Work Scheduler" class="nav-link" Expanded="false">
-            <MudNavLink Href="/WorkScheduler/Calendar">Calendar</MudNavLink>
-            <MudNavLink Href="/WorkScheduler/SchedulerAnalyzer">Analyzer</MudNavLink>
-        </MudNavGroup>
-            </Authorized>
-        </AuthorizeView>
-         <AuthorizeView>
-            <NotAuthorized>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <span class="oi oi-plus" aria-hidden="true"></span> Login
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="register">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Register
-            </NavLink>
-        </div>
-            </NotAuthorized>
-        </AuthorizeView>
-    </nav>
-</div>
+    <AuthorizeView>
+        <Authorized>
+            <MudText Typo="Typo.caption" Class="px-4 mt-6 mb-1 d-block font-weight-bold" Style="color: #64748b; text-transform: uppercase; letter-spacing: 1px;">
+                Scheduler
+            </MudText>
 
-@code {
-    private bool collapseNavMenu = false;
+            <MudNavLink Href="/WorkScheduler/Calendar" Icon="@Icons.Material.Rounded.CalendarMonth" IconColor="Color.Info">
+                Calendar
+            </MudNavLink>
+            <MudNavLink Href="/WorkScheduler/SchedulerAnalyzer" Icon="@Icons.Material.Rounded.BarChart" IconColor="Color.Info">
+                Analyzer
+            </MudNavLink>
+        </Authorized>
+        <NotAuthorized>
+            <MudText Typo="Typo.caption" Class="px-4 mt-6 mb-1 d-block font-weight-bold" Style="color: #64748b; text-transform: uppercase; letter-spacing: 1px;">
+                Account
+            </MudText>
+            <MudNavLink Href="login" Icon="@Icons.Material.Rounded.Login" IconColor="Color.Info">Login</MudNavLink>
+            <MudNavLink Href="register" Icon="@Icons.Material.Rounded.PersonAdd" IconColor="Color.Info">Register</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+</MudNavMenu>
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
+<style>
+    /* Dodatkowy styl, aby nav-linki na błękitnym tle wyglądały jeszcze lepiej */
+    .mud-nav-link {
+        border-radius: 12px !important;
+        margin-bottom: 4px;
     }
-}
+
+        .mud-nav-link.active {
+            background-color: #e0f2fe !important; /* Mocniejszy błękit dla aktywnego elementu */
+            color: #0369a1 !important;
+            font-weight: 600;
+        }
+
+        .mud-nav-link:hover {
+            background-color: #eef2ff !important;
+        }
+</style>

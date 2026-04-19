@@ -25,10 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Scheduler\View\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DTOModels\DTOModels.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
     <ProjectReference Include="..\WorkCalendar.Library\WorkCalendar.Library.csproj" />

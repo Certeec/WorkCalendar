@@ -18,21 +18,43 @@
 @inject HttpClient httpClient
 @inject ISchedulerPlacesService _schedulerPlacesService;
 
+<MudHidden Breakpoint="Breakpoint.SmAndDown">
+	<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+		<MudText Typo="Typo.h4" Color="Color.Primary" Class="font-weight-bold mb-6">My Calendar</MudText>
 
-<MudCalendar T=SchedulerTask Items="CalendarTasks" onchange="" CellClicked="CellClicked" ItemClicked="ItemClicked" DateRangeChanged="DateRangeChanged" DayTimeInterval="CalendarTimeInterval.Minutes15">
-	<CellTemplate>
-		<div style="width: 100%; height: 100%; background-color: @GetColor(ItemColor(context)); border: 2px solid darken(@GetColor(ItemColor(context)), 10%); border-radius: 4px; padding: 4px; box-sizing: border-box;">
-			<MudText Style="color: #ffffff; font-weight: 500;" Typo="Typo.body2" Align="Align.Center">@(GetCalendarItemName(context))</MudText>
-		</div>
-	</CellTemplate>
-</MudCalendar>
+		<MudPaper Elevation="3" Class="pa-4 rounded-xl">
+			<MudCalendar T="SchedulerTask" Items="CalendarTasks" CellClicked="CellClicked" ItemClicked="ItemClicked" DateRangeChanged="DateRangeChanged" DayTimeInterval="CalendarTimeInterval.Minutes15">
+				<CellTemplate>
+					<MudPaper Elevation="0" Class="w-100 h-100 pa-1 rounded d-flex align-center justify-center transition-fade" Style="@($"background-color: {GetColor(ItemColor(context))}; cursor: pointer;")">
+						<MudText Typo="Typo.caption" Style="color: #ffffff; font-weight: 600;" Align="Align.Center">
+							@(GetCalendarItemName(context))
+						</MudText>
+					</MudPaper>
+				</CellTemplate>
+			</MudCalendar>
+		</MudPaper>
+	</MudContainer>
+</MudHidden>
 
+<MudHidden Breakpoint="Breakpoint.MdAndUp">
+	<div style="height: 85vh; width: 100%;">
+		<MudCalendar T="SchedulerTask" Items="CalendarTasks" CellClicked="CellClicked" ItemClicked="ItemClicked" DateRangeChanged="DateRangeChanged" DayTimeInterval="CalendarTimeInterval.Minutes15">
+			<CellTemplate>
+				<MudPaper Elevation="0" Class="w-100 h-100 pa-1 rounded d-flex align-center justify-center transition-fade" Style="@($"background-color: {GetColor(ItemColor(context))}; cursor: pointer;")">
+					<MudText Typo="Typo.caption" Style="color: #ffffff; font-weight: 600;" Align="Align.Center">
+						@(GetCalendarItemName(context))
+					</MudText>
+				</MudPaper>
+			</CellTemplate>
+		</MudCalendar>
+	</div>
+</MudHidden>
 <MudMessageBox @ref="mbox" Title="Warning" CancelText="Cancel">
 	<MessageContent>
-		Deleting can <b><i>not</i></b> be undone!
+		<MudText Typo="Typo.body1">Deleting is <b>final</b>!</MudText>
 	</MessageContent>
 	<YesButton>
-		<MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete!</MudButton>
+		<MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete</MudButton>
 	</YesButton>
 </MudMessageBox>
 
@@ -118,11 +140,10 @@
 			}
 			return allTasks;
 		}
-
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Błąd podczas pobierania zadań: {ex.Message}");
-			snackbar.Add($"Błąd podczas ładowania zadań: {ex.Message}", Severity.Error);
+			Console.WriteLine($"Error while fetching tasks: {ex.Message}");
+			snackbar.Add($"Error while loading tasks: {ex.Message}", Severity.Error);
 			return new List<SchedulerTask>();
 		}
 	}

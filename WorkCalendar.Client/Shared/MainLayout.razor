@@ -6,51 +6,66 @@
 @inject ILocalStorageService localStorageService
 @inject NavigationManager navigationManager
 
-<MudThemeProvider />
+<MudThemeProvider Theme="_skyTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Style="background-image: linear-gradient( 109.6deg,  rgba(0,182,255,1) 11.2%, rgba(102,51,153,1) 91.1% );">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Success" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+    <MudAppBar Elevation="0" Style="background-color: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid #e0f2fe;">
+        <MudIconButton Icon="@Icons.Material.Rounded.Menu" Color="Color.Primary" Edge="Edge.Start" OnClick="DrawerToggle" />
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <MudText Typo="Typo.h5"  Class="ml-3">Welcome </MudText> 
-                <MudText Typo="Typo.h5" @onclick="Logout" Class="ml-3">Logout </MudText>
-        </Authorized>
+                <MudChip T="string" Icon="@Icons.Material.Rounded.Person" Color="Color.Primary" Variant="Variant.Text" Class="mr-4 px-3 rounded-pill">
+                    Welcome, User
+                </MudChip>
+                <MudTooltip Text="Logout">
+                    <MudIconButton Icon="@Icons.Material.Rounded.Logout" Color="Color.Default" OnClick="Logout" />
+                </MudTooltip>
+            </Authorized>
         </AuthorizeView>
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Surface" Edge="Edge.End" />
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <div style="background-image:none;background-color:cadetblue;" class="sidebar">
+
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" ClipMode="DrawerClipMode.Never" Style="border-right: 1px solid #bae6fd; background-color: #f0f9ff;">
+        <div class="d-flex align-center pa-4" style="height: 64px; border-bottom: 1px solid #bae6fd;">
+            <MudIcon Icon="@Icons.Material.Rounded.AutoGraph" Color="Color.Primary" Size="Size.Large" Class="mr-2" />
+            <MudText Typo="Typo.h5" Class="font-weight-black" Color="Color.Primary">WorkCal</MudText>
+        </div>
+        <div class="pa-3">
             <NavMenu />
         </div>
     </MudDrawer>
-    <MudMainContent>
-        @Body
+
+    <MudMainContent Style="background-color: #f8fafc; min-height: 100vh;">
+            @Body
     </MudMainContent>
 </MudLayout>
+
 @code {
     bool _drawerOpen = true;
 
-    void DrawerToggle()
+    private MudTheme _skyTheme = new MudTheme()
     {
-        _drawerOpen = !_drawerOpen;
-    }
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#0ea5e9",
+            Secondary = "#0284c7",
+            Background = "#f8fafc",
+            DrawerBackground = "#f0f9ff", // Usunięto czystą biel na rzecz błękitu
+            AppbarBackground = "#ffffff",
+            TextPrimary = "#0f172a",
+            TextSecondary = "#475569"
+        }
+    };
+
+    void DrawerToggle() => _drawerOpen = !_drawerOpen;
 
     void Logout()
     {
         var stateProvider = (AuthStateProvider)_userActions;
-        navigationManager.NavigateTo("/login");
+    navigationManager.NavigateTo("/login");
         stateProvider.NotifyUserLogout();
         localStorageService.ClearAsync();
-    }
-
-    string GetUserName()
-    {
-        return string.Empty;
     }
 }
