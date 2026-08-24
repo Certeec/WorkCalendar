@@ -1,4 +1,4 @@
-﻿@page "/WorkScheduler/Calendar"
+@page "/WorkScheduler/Calendar"
 @using System.Net.Http.Json
 @using DTOModels
 @using Heron.MudCalendar
@@ -17,10 +17,14 @@
 @inject ISchedulerService schedulerService;
 @inject HttpClient httpClient
 @inject ISchedulerPlacesService _schedulerPlacesService;
+@inject ISchedulerTaskService _schedulerTaskService;
 
 <MudHidden Breakpoint="Breakpoint.SmAndDown">
 	<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
-		<MudText Typo="Typo.h4" Color="Color.Primary" Class="font-weight-bold mb-6">My Calendar</MudText>
+		<div class="d-flex justify-space-between align-center mb-6">
+			<MudText Typo="Typo.h4" Color="Color.Primary" Class="font-weight-bold">My Calendar</MudText>
+			<MudButton Color="Color.Success" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ImportExport" OnClick="ImportExcel">Import from Excel</MudButton>
+		</div>
 
 		<MudPaper Elevation="3" Class="pa-4 rounded-xl">
 			<MudCalendar T="SchedulerTask" Items="CalendarTasks" CellClicked="CellClicked" ItemClicked="ItemClicked" DateRangeChanged="DateRangeChanged" DayTimeInterval="CalendarTimeInterval.Minutes15">
@@ -38,6 +42,9 @@
 
 <MudHidden Breakpoint="Breakpoint.MdAndUp">
 	<div style="height: 85vh; width: 100%;">
+		<div class="d-flex justify-center mb-2 mt-2">
+			<MudButton Color="Color.Success" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ImportExport" OnClick="ImportExcel">Import from Excel</MudButton>
+		</div>
 		<MudCalendar T="SchedulerTask" Items="CalendarTasks" CellClicked="CellClicked" ItemClicked="ItemClicked" DateRangeChanged="DateRangeChanged" DayTimeInterval="CalendarTimeInterval.Minutes15">
 			<CellTemplate>
 				<MudPaper Elevation="0" Class="w-100 h-100 pa-1 rounded d-flex align-center justify-center transition-fade" Style="@($"background-color: {GetColor(ItemColor(context))}; cursor: pointer;")">
@@ -145,6 +152,39 @@
 			Console.WriteLine($"Error while fetching tasks: {ex.Message}");
 			snackbar.Add($"Error while loading tasks: {ex.Message}", Severity.Error);
 			return new List<SchedulerTask>();
+		}
+	}
+
+	private async Task ImportExcel()
+	{
+		var tasksToImport = await SchedulerTaskImportDialog.OpenImportDialog(dialogService);
+		if (tasksToImport != null && tasksToImport.Any())
+		{
+			var existingPlaces = await _schedulerPlacesService.GetUserPlaces();
+			var existingPlaceNames = existingPlaces.Select(p => p.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+			int addedCount = 0;
+			foreach (var t in tasksToImport)
+			{
+				if (!string.IsNullOrWhiteSpace(t.Place) && !existingPlaceNames.Contains(t.Place))
+				{
+					var newPlace = new SchedulerPlaceDTO { Name = t.Place, IsActive = true };
+					_schedulerPlacesService.AddUserPlace(newPlace);
+					existingPlaceNames.Add(t.Place);
+				}
+				
+				t.MoneyPerHour = userIncome;
+				await _schedulerTaskService.AddTask(t);
+				addedCount++;
+			}
+
+			snackbar.Add($"Imported {addedCount} tasks.", Severity.Success);
+			
+			if (_currentDateRange != null)
+			{
+				CalendarTasks = await GetAndFixInvalidTasks((DateTime)_currentDateRange.Start, (DateTime)_currentDateRange.End);
+				StateHasChanged();
+			}
 		}
 	}
 }

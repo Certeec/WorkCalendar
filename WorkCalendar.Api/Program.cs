@@ -18,6 +18,19 @@ builder.Services.AddWindowsService(options =>
 });
 
 builder.Services.AddControllers();
+
+// Dodanie konfiguracji CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5083", "https://localhost:7198")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
@@ -77,6 +90,8 @@ app.UseHttpsRedirection();
 // Serwowanie statycznych plików Blazor WebAssembly
 app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
