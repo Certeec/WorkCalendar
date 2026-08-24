@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MedicalCompanyManagement.API.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WorkCalendar.Library.Planner.SchedulerGenerator;
 
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WorkCalendar.Api.Controllers
 {
@@ -22,7 +21,7 @@ namespace WorkCalendar.Api.Controllers
 		[HttpGet]
 		public IActionResult GetAllTasks(string urlKey)
 		{
-			var userLoginId = int.Parse(HttpContext.User.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value.ToString());
+			var userLoginId = User.GetUserId();
 
 			var list = _schedulerGeneratorService.GetPublishedScheduler(urlKey);
 

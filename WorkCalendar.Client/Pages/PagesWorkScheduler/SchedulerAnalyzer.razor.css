@@ -33,3 +33,33 @@ label {
     width: 200px;
     display: inline-block;
 }
+
+
+@@media (max-width: 768px) {
+    .mud-table-pagination-toolbar
+
+{
+    flex-wrap: wrap !important;
+    height: auto !important;
+    min-height: 56px !important;
+    justify-content: center !important;
+    padding: 12px !important;
+    gap: 12px;
+}
+
+.mud-table-pagination-toolbar > .mud-table-pagination-caption:first-child,
+.mud-table-pagination-toolbar > .mud-select {
+    display: none !important;
+}
+
+.mud-table-pagination-actions {
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+.mud-table-pagination-display {
+    margin: 0 8px !important;
+}
+
+}

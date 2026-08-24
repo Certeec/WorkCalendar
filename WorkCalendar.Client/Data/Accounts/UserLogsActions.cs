@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using Models.DatabaseModels;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using WorkCalendar.Client.Data.Accounts.DTO;
@@ -15,17 +16,17 @@ namespace WorkCalendar.Client.Data.Accounts
         public UserLogsActions(IHttpClientFactory clientFactory, ILocalStorageService localStorageService, IConfiguration configuration)
         {
             _clientFactory = clientFactory;
-            _client = _clientFactory.CreateClient();
+            _client = _clientFactory.CreateClient("API");
             _localStorageService = localStorageService;
             _serverAdress = configuration["ServerAdress"];
         }
 
-        public async Task<List<LoginHistory>> GetUserLogInHistory()
+        public async Task<List<UserLogInHistory>> GetUserLogInHistory()
         {
             var userToken = await _localStorageService.GetItemAsync<UserToken>("UserAuthToken");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken.Token);
 
-            return await _client.GetFromJsonAsync<List<LoginHistory>>(_serverAdress + "UserLogs/Account");
+            return await _client.GetFromJsonAsync<List<UserLogInHistory>>(_serverAdress + "UserLogs/Account");
         }
     }
 }

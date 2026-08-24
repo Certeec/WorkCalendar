@@ -1,4 +1,6 @@
-﻿namespace WorkCalendar.Client.Data.Accounts
+﻿using Microsoft.IdentityModel.Tokens;
+
+namespace WorkCalendar.Client.Data.Accounts
 {
     public class UserCredentials
     {
@@ -8,16 +10,16 @@
 
         public bool VerifyData()
         {
-            if (Login == null || Login == string.Empty)
+            if (Login.IsNullOrEmpty())
                 return false;
 
-            if (Password == null || Password == string.Empty)
+            if (Password.IsNullOrEmpty())
                 return false;
 
-            if (Email == null || Email == string.Empty)
+            if (Email.IsNullOrEmpty())
                 return false;
 
-            if(false == Email.Contains("@"))
+            if(!Email.Contains("@"))
             {
                 return false;
             }

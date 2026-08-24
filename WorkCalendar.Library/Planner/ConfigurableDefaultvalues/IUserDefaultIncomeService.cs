@@ -1,8 +1,10 @@
-﻿namespace WorkCalendar.Library.Planner.ConfigurableDefaultvalues
+﻿using Models.DatabaseModels;
+
+namespace WorkCalendar.Library.Planner.ConfigurableDefaultvalues
 {
     public interface IUserDefaultIncomeService
     {
-        double GetUserDefaultIncome(int userId);
+        UserSchedulerDefaultHourIncome? GetUserDefaultIncome(int userId);
         bool SetUserDefaultIncome(int userId, double userIncomePerHour);
     }
 }

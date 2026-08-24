@@ -15,37 +15,83 @@ using WorkCalendar.Client.Data.MessageBox;
 using WorkCalendar.Client.Data.Scheduler.SchedulerUserDefaults;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-
-// Konfiguracja root components
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// HttpClient configuration
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+var serverAddress = builder.Configuration["ServerAdress"] ?? "/api/";
 
-// Dodatkowy HttpClient dla zewn�trznych API (je�li potrzebny)
-builder.Services.AddHttpClient();
+Uri apiAddress;
+if (serverAddress.StartsWith("http://") || serverAddress.StartsWith("https://"))
+{
+    Console.WriteLine(serverAddress + "Found");
+    apiAddress = new Uri(serverAddress);
+}
+else
+{
+    var baseUri = new Uri(builder.HostEnvironment.BaseAddress);
+    apiAddress = new Uri(baseUri, serverAddress);
+}
 
-// Twoje serwisy
+builder.Services.AddHttpClient("API", client =>
+{
+    client.BaseAddress = apiAddress;
+    client.Timeout = TimeSpan.FromMinutes(2); // Krótszy timeout dla stabilności
+
+    // Dodaj headers dla lepszej kompatybilności
+    client.DefaultRequestHeaders.Add("User-Agent", "BlazorWASM/1.0");
+});
+
+// Główny HttpClient
+builder.Services.AddScoped(sp =>
+{
+    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+    var client = httpClientFactory.CreateClient("API");
+    return client;
+});
+
+// POPRAWIONE lifetime management
 builder.Services.AddAuthorizationCore();
-builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddTransient<IUserActions, UserActions>();
-builder.Services.AddSingleton<IMessageBoxHandler, MessageBoxHandler>();
-builder.Services.AddScoped<IUserLogsActions, UserLogsActions>();
-builder.Services.AddTransient<ISchedulerTaskService, SchedulerTaskService>();
-builder.Services.AddTransient<ISchedulerPlacesService, SchedulerPlacesService>();
-builder.Services.AddTransient<ISchedulerDefaultHourIncomeService, SchedulerDefaultHourIncomeService>();
-builder.Services.AddTransient<ISchedulerService, SchedulerService>();
-builder.Services.AddTransient<ISchedulerGeneratorService, SchedulerGeneratorService>();
 
-// Authentication & Authorization
+// Serwisy związane z użytkownikami - Scoped (per user session)
+builder.Services.AddScoped<IUserActions, UserActions>();
+builder.Services.AddScoped<IUserLogsActions, UserLogsActions>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
-// External libraries
+// Serwisy biznesowe - Scoped (współdzielone w ramach requesta/komponentu)
+builder.Services.AddScoped<ISchedulerTaskService, SchedulerTaskService>();
+builder.Services.AddScoped<ISchedulerPlacesService, SchedulerPlacesService>();
+builder.Services.AddScoped<ISchedulerDefaultHourIncomeService, SchedulerDefaultHourIncomeService>();
+builder.Services.AddScoped<ISchedulerService, SchedulerService>();
+builder.Services.AddScoped<ISchedulerGeneratorService, SchedulerGeneratorService>();
+
+// MessageBox jako Scoped zamiast Singleton - uniknie memory leaks
+builder.Services.AddScoped<IMessageBoxHandler, MessageBoxHandler>();
+
+// Standardowe serwisy
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    // Opcjonalna konfiguracja MudBlazor
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+    config.SnackbarConfiguration.PreventDuplicates = false;
+    config.SnackbarConfiguration.NewestOnTop = false;
+    config.SnackbarConfiguration.ShowCloseIcon = true;
+    config.SnackbarConfiguration.VisibleStateDuration = 10000;
+    config.SnackbarConfiguration.HideTransitionDuration = 500;
+    config.SnackbarConfiguration.ShowTransitionDuration = 500;
+});
+
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 
+var app = builder.Build();
 
-await builder.Build().RunAsync();
+try
+{
+    await app.RunAsync();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Application failed to start: {ex.Message}");
+    throw;
+}

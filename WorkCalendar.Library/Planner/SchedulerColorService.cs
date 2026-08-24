@@ -1,4 +1,5 @@
 ﻿
+using Models.Enums;
 using WorkCalendar.Library.Models;
 
 namespace WorkCalendar.Library.Planner
@@ -27,19 +28,19 @@ namespace WorkCalendar.Library.Planner
 
 			foreach(var day in coloredList)
 			{
-				if( tasks.Where(N => N.DateStart == day.Day).FirstOrDefault(n => n.TaskType == "Done") != null)
+				if( tasks.Where(N => N.DateStart == day.Day).FirstOrDefault(n => n.TaskState == SchedulerTaskState.Done) != null)
 				{
 					day.DayType = "Done";
 				}
-				else if(tasks.Where(N => N.DateStart == day.Day).FirstOrDefault(n => n.TaskType == "Planned") != null)
+				else if(tasks.Where(N => N.DateStart == day.Day).FirstOrDefault(n => n.TaskState == SchedulerTaskState.Planned) != null)
 				{
 					day.DayType = "Planned";
 				}
-				else if (tasks.Where(N => N.DateStart == day.Day).FirstOrDefault(n => n.TaskType == "Availabe") != null)
+				else if (tasks.Where(N => N.DateStart == day.Day).FirstOrDefault(n => n.TaskState == SchedulerTaskState.Availabe) != null)
 				{
 					day.DayType = "Availabe";
 				}
-				else if (tasks.Where(N => N.DateStart == day.Day).FirstOrDefault(n => n.TaskType == "Unavailabe") != null)
+				else if (tasks.Where(N => N.DateStart == day.Day).FirstOrDefault(n => n.TaskState == SchedulerTaskState.Unavailabe) != null)
 				{
 					day.DayType = "Unavailabe";
 				}

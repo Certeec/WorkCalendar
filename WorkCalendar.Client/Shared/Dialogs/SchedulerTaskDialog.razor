@@ -1,7 +1,10 @@
 @using Blazored.LocalStorage
+@using DTOModels
 @using MudBlazor
+@using System.Globalization
 @using WorkCalendar.Client.Data.Scheduler
 @using WorkCalendar.Client.Data.Scheduler.SchedulerPlaces
+@using Models.Enums
 @inject ILocalStorageService _localStorageService;
 @inject ISchedulerTaskService _schedulerService
 @inject ISchedulerPlacesService _schedulerPlacesService;
@@ -19,18 +22,18 @@
             }
         </MudSelect>
         <MudTextField T="string" Label="Description" @bind-Value="task.Description" ></MudTextField>
-        <MudTextField T="double" Label="Money Per Hour"  @bind-Value="task.MoneyPerHour"></MudTextField>
-        <MudTextField T="double" Label="Premium points" @bind-Value="task.PremiumPoints"></MudTextField>
-        <MudTextField T="double" Label="Bonus" @bind-Value="task.Bonus" ReadOnly="task.BonusByRevenue"></MudTextField>
-        <MudSelect T="string" Label="Type" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.TaskType">
-            <MudSelectItem Value="@("Planned")" />
-            <MudSelectItem Value="@("Done")" />
-            <MudSelectItem Value="@("Availabe")" />
-            <MudSelectItem Value="@("Unavailabe")" />
+        <MudTextField T="double" Label="Money Per Hour" @bind-Value="task.MoneyPerHour" Culture="@CultureInfo.InvariantCulture">></MudTextField>
+        <MudTextField T="double" Label="Premium points" @bind-Value="task.PremiumPoints"Culture="@CultureInfo.InvariantCulture"></MudTextField>
+        <MudTextField T="double" Label="Bonus" @bind-Value="task.Bonus" Culture="@CultureInfo.InvariantCulture" ReadOnly="task.BonusByRevenue"></MudTextField>
+        <MudSelect T="SchedulerTaskState" Label="Type" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.TaskState">
+            <MudSelectItem Value="SchedulerTaskState.Availabe">Availabe</MudSelectItem>
+            <MudSelectItem Value="SchedulerTaskState.Planned">Planned</MudSelectItem>
+            <MudSelectItem Value="SchedulerTaskState.Done">Done</MudSelectItem>
+            <MudSelectItem Value="SchedulerTaskState.Unavailabe">Unavailabe</MudSelectItem>
         </MudSelect>
         <MudCheckBox @bind-Value="task.BonusByRevenue" Label="Bonus by revenue"></MudCheckBox>
-        <MudTextField T="double" Label="Revenue"  @bind-Value="task.Revenue" ></MudTextField>
-        <MudTextField T="double" Label="Revenue Participation" @bind-Value="task.RevenueParticipation" ReadOnly="!task.BonusByRevenue"></MudTextField>
+        <MudTextField T="double" Label="Revenue" Culture="@CultureInfo.InvariantCulture" @bind-Value="task.Revenue"></MudTextField>
+        <MudTextField T="double" Label="Revenue Participation" Culture="@CultureInfo.InvariantCulture" @bind-Value="task.RevenueParticipation" ReadOnly="!task.BonusByRevenue"></MudTextField>
     </DialogContent>
     <DialogActions>
         @if (isEditing)
@@ -50,7 +53,7 @@
     SchedulerTask task = new SchedulerTask() { Description = string.Empty};
     TimeSpan timeStart;
     TimeSpan timeEnd;
-    List<SchedulerPlace> places = new List<SchedulerPlace>();
+    List<SchedulerPlaceDTO> places = new List<SchedulerPlaceDTO>();
     private bool isEditing = false;
 
     protected override async Task OnInitializedAsync()
@@ -68,11 +71,11 @@
         else
         {
             task.MoneyPerHour = income;
-            var place = places.FirstOrDefault<SchedulerPlace>(n => n.Name != string.Empty);
+            var place = places.FirstOrDefault<SchedulerPlaceDTO>(n => n.Name != string.Empty);
             if (place != null)
                 task.Place = place.Name;
 
-            task.TaskType = "Planned";
+            task.TaskState = SchedulerTaskState.Planned;
         }
 
     }

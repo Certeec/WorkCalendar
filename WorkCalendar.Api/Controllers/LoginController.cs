@@ -2,8 +2,6 @@
 using WorkCalendar.Library.Accounts;
 
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace WorkCalendar.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -20,8 +18,8 @@ namespace WorkCalendar.Api.Controllers
         [HttpPost("Account")]
         public IActionResult CreateAccount([FromBody] CreateAccountDTO accData)
         {
-            _userService.CreateUser(accData);
-            return Ok();
+            var result = _userService.CreateUser(accData);
+            return result ? Ok() : BadRequest();
         }
 
         [HttpPost]

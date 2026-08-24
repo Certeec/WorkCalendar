@@ -9,21 +9,25 @@
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="6.0.1" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageReference Include="ClosedXML" Version="0.105.1" />
     <PackageReference Include="Heron.MudCalendar" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="MudBlazor" Version="8.10.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" PrivateAssets="all" />
+	<PackageReference Include="Radzen.Blazor" Version="8.5.2" />
 
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Scheduler\View\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\DTOModels\DTOModels.csproj" />
+    <ProjectReference Include="..\Models\Models.csproj" />
     <ProjectReference Include="..\WorkCalendar.Library\WorkCalendar.Library.csproj" />
   </ItemGroup>
 

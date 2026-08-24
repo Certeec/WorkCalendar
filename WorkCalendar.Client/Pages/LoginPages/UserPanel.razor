@@ -1,7 +1,9 @@
 ﻿
 @page "/UserPanel"
 @layout MainLayout
+@using Models
 @using Microsoft.AspNetCore.Authorization
+@using Models.DatabaseModels
 @attribute [Microsoft.AspNetCore.Authorization.Authorize]
 @attribute [Authorize]
 @inject NavigationManager navigationManager
@@ -49,9 +51,9 @@
         @foreach (var loginHistory in userLoginHistory)
         {
                                 <tr>
-                                            <td>@loginHistory.date</td>
-                                            <td>@loginHistory.duration</td>
-                                            <td>@loginHistory.ip</td>
+                                            <td>@loginHistory.LoginDate</td>
+                                            <td>@loginHistory.Duration</td>
+                                            <td>@loginHistory.UserIp</td>
                                 </tr>
         }
         </tbody>
@@ -60,8 +62,8 @@
 
 
 @code {
-    User currentUser = new User();
-    List<LoginHistory> userLoginHistory = new List<LoginHistory>();
+   User currentUser = new User();
+    List<UserLogInHistory> userLoginHistory = new List<UserLogInHistory>();
 
 
     private int currentCount = 0;
@@ -70,25 +72,25 @@
     {
         currentUser.Login = "hej";
         currentUser.Password = "MyNewPw";
-        var history = new LoginHistory()
+        var history = new UserLogInHistory()
             {
-                date = DateTime.Now,
-                duration = DateTime.MinValue,
-                ip = "52.525.626.727"
+                LoginDate = DateTime.Now,
+                Duration = DateTime.MinValue,
+                UserIp = "52.525.626.727"
             };
 
-        var history2 = new LoginHistory()
+        var history2 = new UserLogInHistory()
             {
-                date = DateTime.Now,
-                duration = DateTime.MinValue,
-                ip = "709.25.66.117"
+                LoginDate = DateTime.Now,
+                Duration = DateTime.MinValue,
+                UserIp = "709.25.66.117"
             };
 
-        var history3 = new LoginHistory()
+        var history3 = new UserLogInHistory()
             {
-                date = DateTime.Now,
-                duration = DateTime.MinValue,
-                ip = "02.15.626.76"
+                LoginDate = DateTime.Now,
+                Duration = DateTime.MinValue,
+                UserIp = "02.15.626.76"
             };
             userLoginHistory.Add(history);
         userLoginHistory.Add(history2);

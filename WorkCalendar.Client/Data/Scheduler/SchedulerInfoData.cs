@@ -9,8 +9,9 @@
         private double _bonus;
         private double _hours;
 		private double _totalPay;
+        private double _premiumPoints;
 
-		public double TotalHours
+        public double TotalHours
         {
             get
             {
@@ -46,7 +47,7 @@
             }
         }
 
-        public double bonus
+        public double Bonus
         {
             get
             {
@@ -80,5 +81,16 @@
 				_totalPay = Math.Round(value, _rounding);
 			}
 		}
-	}
+        public double PremiumPoints
+        {
+            get
+            {
+                return _premiumPoints;
+            }
+            set
+            {
+                _premiumPoints = Math.Round(value, _rounding);
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Net;
 using System.Net.Http.Json;
 using WorkCalendar.Client.Data.Accounts.DTO;
 using WorkCalendar.Client.Data.Auth;
@@ -18,7 +19,7 @@ namespace WorkCalendar.Client.Data.Accounts
         public UserActions(IHttpClientFactory clientFactory, ILocalStorageService localStorageService, AuthenticationStateProvider authStateProvider, IConfiguration configuration)
         {
             _clientFactory = clientFactory;
-            _client = _clientFactory.CreateClient();
+            _client = _clientFactory.CreateClient("API");
             _localStorageService = localStorageService;
             _authStateProvider = (AuthStateProvider)authStateProvider;
             _client.Timeout = new TimeSpan(0,0,5);
@@ -45,9 +46,10 @@ namespace WorkCalendar.Client.Data.Accounts
             var user = new UserToSerialize() { Login = username, Password = password };
             try
             {
+                Console.Write("Sending Packet");
                 HttpResponseMessage response = await _client.PostAsJsonAsync(_serverAdress + "Login", user);
                 Console.WriteLine("Response message new way is  CODE STATUS " + response.StatusCode);
-                if (response.StatusCode.ToString() == "OK")
+                if (response.StatusCode.HasFlag(HttpStatusCode.OK))
                 {
                     return await response.Content.ReadFromJsonAsync<UserToken>();
                 }
@@ -55,17 +57,16 @@ namespace WorkCalendar.Client.Data.Accounts
             catch(Exception e)
             {
                 Console.WriteLine(e);
-                return new UserToken();
             }
 
-            return new UserToken();
+             return new UserToken();
 
         }
         public async Task<bool> CreateAccount(UserCredentials userCredentials)
         {
             HttpResponseMessage response = await _client.PostAsJsonAsync(_serverAdress + "Login/Account", userCredentials);
 
-            return response.StatusCode.ToString() == "OK" ? true : false;
+            return response.StatusCode.HasFlag(HttpStatusCode.OK);
         }
     }
 }
